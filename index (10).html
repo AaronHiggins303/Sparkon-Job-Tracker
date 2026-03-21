@@ -298,7 +298,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
       <div class="form-title">Pricing</div>
       <div class="field-row">
         <div class="field"><label>Agreed Price (€)</label><input type="number" id="nj-agreed" placeholder="0.00" inputmode="decimal"></div>
-        <div class="field"><label>Hourly Rate (€)</label><input type="number" id="nj-rate" placeholder="65" inputmode="decimal" value=""></div>
+        <div class="field"><label>Hourly Rate (€)</label><input type="number" id="nj-rate" placeholder="0.00" inputmode="decimal" value=""></div>
       </div>
       <div class="field-row">
         <div class="field"><label>Hours Worked</label><input type="number" id="nj-hours" placeholder="0" inputmode="decimal" oninput="calcNew()"></div>
@@ -544,7 +544,7 @@ function renderCalc(c,gridId){
 function calcNew(){
   const c=calc(
     document.getElementById('nj-hours').value,
-    document.getElementById('nj-rate').value||0,
+    document.getElementById('nj-rate').value||65,
     document.getElementById('nj-mats').value,
     document.getElementById('nj-received').value,
     document.getElementById('nj-agreed').value
@@ -557,7 +557,7 @@ function calcNew(){
 function calcEdit(){
   const c=calc(
     document.getElementById('ej-hours').value,
-    document.getElementById('ej-rate').value||0,
+    document.getElementById('ej-rate').value||65,
     document.getElementById('ej-mats').value,
     document.getElementById('ej-received').value,
     document.getElementById('ej-agreed').value
@@ -724,7 +724,7 @@ function resetNewJob(){
   ['nj-name','nj-customer','nj-phone','nj-email','nj-location','nj-agreed','nj-mats','nj-hours','nj-received','nj-notes'].forEach(id=>{
     const el=document.getElementById(id);if(el) el.value='';
   });
-  document.getElementById('nj-rate').value=settings.rate||0;
+  document.getElementById('nj-rate').value=settings.rate||'';
   document.getElementById('nj-interval').value='';
   document.getElementById('nj-calc').style.display='none';
   document.querySelectorAll('#screen-new-job .status-opt').forEach(o=>o.className='status-opt');
@@ -742,7 +742,7 @@ function saveNewJob(){
     location:document.getElementById('nj-location').value.trim(),
     status:njStatus,
     agreed:document.getElementById('nj-agreed').value||0,
-    rate:document.getElementById('nj-rate').value||0,
+    rate:document.getElementById('nj-rate').value||65,
     hours:document.getElementById('nj-hours').value||0,
     mats:document.getElementById('nj-mats').value||0,
     received:document.getElementById('nj-received').value||0,
@@ -843,7 +843,7 @@ function showEditJob(){
   document.getElementById('ej-email').value=j.email||'';
   document.getElementById('ej-location').value=j.location||'';
   document.getElementById('ej-agreed').value=j.agreed||'';
-  document.getElementById('ej-rate').value=j.rate||0;
+  document.getElementById('ej-rate').value=j.rate||65;
   document.getElementById('ej-hours').value=j.hours||'';
   document.getElementById('ej-mats').value=j.mats||'';
   document.getElementById('ej-received').value=j.received||'';
@@ -868,7 +868,7 @@ function saveEditJob(){
     location:document.getElementById('ej-location').value.trim(),
     status:ejStatus,
     agreed:document.getElementById('ej-agreed').value||0,
-    rate:document.getElementById('ej-rate').value||0,
+    rate:document.getElementById('ej-rate').value||65,
     hours:document.getElementById('ej-hours').value||0,
     mats:document.getElementById('ej-mats').value||0,
     received:document.getElementById('ej-received').value||0,
@@ -1198,7 +1198,7 @@ function loadSettings(){
   document.getElementById('s-title').value=settings.title||'';
   document.getElementById('s-iban').value=settings.iban||'';
   document.getElementById('s-bic').value=settings.bic||'';
-  document.getElementById('s-rate').value=settings.rate||0;
+  document.getElementById('s-rate').value=settings.rate||65;
   document.getElementById('s-terms').value=settings.terms||'Payment due on receipt';
   document.getElementById('s-footer').value=settings.footer||'';
 }
@@ -1215,7 +1215,7 @@ function saveSettings(){
     title:document.getElementById('s-title').value.trim(),
     iban:document.getElementById('s-iban').value.trim(),
     bic:document.getElementById('s-bic').value.trim(),
-    rate:document.getElementById('s-rate').value||0,
+    rate:document.getElementById('s-rate').value||65,
     terms:document.getElementById('s-terms').value,
     footer:document.getElementById('s-footer').value.trim()
   };
@@ -1437,7 +1437,7 @@ function saveSettingsToast(){
     title:document.getElementById('s-title').value.trim(),
     iban:document.getElementById('s-iban').value.trim(),
     bic:document.getElementById('s-bic').value.trim(),
-    rate:document.getElementById('s-rate').value||0,
+    rate:document.getElementById('s-rate').value||65,
     terms:document.getElementById('s-terms').value,
     footer:document.getElementById('s-footer').value.trim()
   };
@@ -1495,6 +1495,12 @@ function checkFirstLaunch(){
 }
 
 // ---- INIT ----
+// Clear any old sample data with rate 65
+if(jobs.length===1 && jobs[0].name==='Kitchen Rewire – Murphy' && (jobs[0].rate===65||jobs[0].rate==='65')){
+  jobs=[];
+  save();
+}
+
 if(jobs.length===0){
   jobs.push({
     id:uid(),name:'Kitchen Rewire – Murphy',
