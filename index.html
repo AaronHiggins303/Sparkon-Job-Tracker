@@ -544,7 +544,7 @@ function renderCalc(c,gridId){
 function calcNew(){
   const c=calc(
     document.getElementById('nj-hours').value,
-    document.getElementById('nj-rate').value||65,
+    document.getElementById('nj-rate').value||0,
     document.getElementById('nj-mats').value,
     document.getElementById('nj-received').value,
     document.getElementById('nj-agreed').value
@@ -557,7 +557,7 @@ function calcNew(){
 function calcEdit(){
   const c=calc(
     document.getElementById('ej-hours').value,
-    document.getElementById('ej-rate').value||65,
+    document.getElementById('ej-rate').value||0,
     document.getElementById('ej-mats').value,
     document.getElementById('ej-received').value,
     document.getElementById('ej-agreed').value
@@ -724,7 +724,7 @@ function resetNewJob(){
   ['nj-name','nj-customer','nj-phone','nj-email','nj-location','nj-agreed','nj-mats','nj-hours','nj-received','nj-notes'].forEach(id=>{
     const el=document.getElementById(id);if(el) el.value='';
   });
-  document.getElementById('nj-rate').value=settings.rate||65;
+  document.getElementById('nj-rate').value=settings.rate||0;
   document.getElementById('nj-interval').value='';
   document.getElementById('nj-calc').style.display='none';
   document.querySelectorAll('#screen-new-job .status-opt').forEach(o=>o.className='status-opt');
@@ -742,7 +742,7 @@ function saveNewJob(){
     location:document.getElementById('nj-location').value.trim(),
     status:njStatus,
     agreed:document.getElementById('nj-agreed').value||0,
-    rate:document.getElementById('nj-rate').value||65,
+    rate:document.getElementById('nj-rate').value||0,
     hours:document.getElementById('nj-hours').value||0,
     mats:document.getElementById('nj-mats').value||0,
     received:document.getElementById('nj-received').value||0,
@@ -843,7 +843,7 @@ function showEditJob(){
   document.getElementById('ej-email').value=j.email||'';
   document.getElementById('ej-location').value=j.location||'';
   document.getElementById('ej-agreed').value=j.agreed||'';
-  document.getElementById('ej-rate').value=j.rate||65;
+  document.getElementById('ej-rate').value=j.rate||0;
   document.getElementById('ej-hours').value=j.hours||'';
   document.getElementById('ej-mats').value=j.mats||'';
   document.getElementById('ej-received').value=j.received||'';
@@ -868,7 +868,7 @@ function saveEditJob(){
     location:document.getElementById('ej-location').value.trim(),
     status:ejStatus,
     agreed:document.getElementById('ej-agreed').value||0,
-    rate:document.getElementById('ej-rate').value||65,
+    rate:document.getElementById('ej-rate').value||0,
     hours:document.getElementById('ej-hours').value||0,
     mats:document.getElementById('ej-mats').value||0,
     received:document.getElementById('ej-received').value||0,
@@ -1198,7 +1198,7 @@ function loadSettings(){
   document.getElementById('s-title').value=settings.title||'';
   document.getElementById('s-iban').value=settings.iban||'';
   document.getElementById('s-bic').value=settings.bic||'';
-  document.getElementById('s-rate').value=settings.rate||65;
+  document.getElementById('s-rate').value=settings.rate||0;
   document.getElementById('s-terms').value=settings.terms||'Payment due on receipt';
   document.getElementById('s-footer').value=settings.footer||'';
 }
@@ -1215,7 +1215,7 @@ function saveSettings(){
     title:document.getElementById('s-title').value.trim(),
     iban:document.getElementById('s-iban').value.trim(),
     bic:document.getElementById('s-bic').value.trim(),
-    rate:document.getElementById('s-rate').value||65,
+    rate:document.getElementById('s-rate').value||0,
     terms:document.getElementById('s-terms').value,
     footer:document.getElementById('s-footer').value.trim()
   };
@@ -1437,7 +1437,7 @@ function saveSettingsToast(){
     title:document.getElementById('s-title').value.trim(),
     iban:document.getElementById('s-iban').value.trim(),
     bic:document.getElementById('s-bic').value.trim(),
-    rate:document.getElementById('s-rate').value||65,
+    rate:document.getElementById('s-rate').value||0,
     terms:document.getElementById('s-terms').value,
     footer:document.getElementById('s-footer').value.trim()
   };
@@ -1458,36 +1458,55 @@ function checkFirstLaunch(){
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800;color:#f0f0f0;">Welcome to <span style="color:#F5C518">SparkOn</span></div>
         </div>
         <div style="font-size:15px;font-weight:700;color:#f0f0f0;margin-bottom:12px;">⚡ Before you start — please read this:</div>
-        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
+        <div id="welcome-tips" style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
           <div style="background:#18181f;border-radius:12px;padding:14px;display:flex;gap:12px;align-items:flex-start;">
             <span style="font-size:20px;flex-shrink:0;">✅</span>
             <div>
-              <div style="font-weight:700;color:#f0f0f0;font-size:14px;margin-bottom:3px;">Works offline</div>
-              <div style="font-size:13px;color:#9090a8;line-height:1.5;">Once opened, the app works with no internet connection — perfect for use on site.</div>
+              <div style="font-weight:700;color:#f0f0f0;font-size:14px;margin-bottom:3px;">Works on all devices</div>
+              <div style="font-size:13px;color:#9090a8;line-height:1.5;">Works on iPhone, Android and PC. Best experience on mobile.</div>
             </div>
           </div>
-          <div style="background:#18181f;border-radius:12px;padding:14px;display:flex;gap:12px;align-items:flex-start;">
-            <span style="font-size:20px;flex-shrink:0;">✅</span>
+          <div id="install-tip" style="background:#18181f;border-radius:12px;padding:14px;display:flex;gap:12px;align-items:flex-start;">
+            <span style="font-size:20px;flex-shrink:0;">📱</span>
             <div>
-              <div style="font-weight:700;color:#f0f0f0;font-size:14px;margin-bottom:3px;">Add to Home Screen</div>
-              <div style="font-size:13px;color:#9090a8;line-height:1.5;">Tap Share → Add to Home Screen for the best experience. Opens like a real app.</div>
+              <div style="font-weight:700;color:#f0f0f0;font-size:14px;margin-bottom:3px;" id="install-title">Install as App</div>
+              <div style="font-size:13px;color:#9090a8;line-height:1.5;" id="install-desc">Loading...</div>
             </div>
           </div>
           <div style="background:#18181f;border-radius:12px;padding:14px;display:flex;gap:12px;align-items:flex-start;">
             <span style="font-size:20px;flex-shrink:0;">⚠️</span>
             <div>
-              <div style="font-weight:700;color:#F5C518;font-size:14px;margin-bottom:3px;">Important — Back up your data</div>
-              <div style="font-size:13px;color:#9090a8;line-height:1.5;">Your jobs are saved on this device only. If you clear your browser cache or change phone — your data could be lost. Use Settings → Backup Data regularly to save a copy.</div>
+              <div style="font-weight:700;color:#F5C518;font-size:14px;margin-bottom:3px;">Back up your data regularly</div>
+              <div style="font-size:13px;color:#9090a8;line-height:1.5;">Your jobs are saved on this device only. Use the Backup button in Invoice Settings to save a copy. If you change device use Restore to get everything back.</div>
             </div>
           </div>
           <div style="background:#18181f;border-radius:12px;padding:14px;display:flex;gap:12px;align-items:flex-start;">
             <span style="font-size:20px;flex-shrink:0;">⚠️</span>
             <div>
               <div style="font-weight:700;color:#F5C518;font-size:14px;margin-bottom:3px;">One device only</div>
-              <div style="font-size:13px;color:#9090a8;line-height:1.5;">Data does not sync between devices. Always use the same phone or tablet to avoid losing jobs.</div>
+              <div style="font-size:13px;color:#9090a8;line-height:1.5;">Data does not sync between devices. Always use the same device to avoid losing jobs.</div>
             </div>
           </div>
         </div>
+        <script>
+        (function(){
+          const isIPhone=/iPhone|iPad/i.test(navigator.userAgent);
+          const isAndroid=/Android/i.test(navigator.userAgent);
+          const t=document.getElementById('install-title');
+          const d=document.getElementById('install-desc');
+          if(!t||!d) return;
+          if(isIPhone){
+            t.textContent='Install on iPhone';
+            d.textContent='Tap the Share button at the bottom of Safari → then tap Add to Home Screen. Opens like a real app!';
+          } else if(isAndroid){
+            t.textContent='Install on Android';
+            d.textContent='Tap the three dots menu in Chrome → tap Add to Home Screen. Opens like a real app!';
+          } else {
+            t.textContent='Using on PC';
+            d.textContent='Works great in your browser! Bookmark this page for quick access. To save invoices use the Save as PDF button.';
+          }
+        })();
+        </script>
         <button onclick="this.closest('div[style]').parentElement.remove()" style="width:100%;padding:16px;border-radius:16px;border:none;background:#F5C518;color:#000;font-size:16px;font-weight:800;font-family:'Barlow',sans-serif;cursor:pointer;">Got it — Let's go! ⚡</button>
       </div>`;
     document.body.appendChild(overlay);
@@ -1501,7 +1520,7 @@ if(jobs.length===0){
     customer:'John Murphy',phone:'087 123 4567',
     email:'john.murphy@email.com',
     location:'14 Oak Lane, Dublin 6',
-    status:'In Progress',agreed:1800,rate:65,
+    status:'In Progress',agreed:1800,rate:0,
     hours:12,mats:340,received:900,
     notes:'Needs new consumer unit. Return Monday.',
     interval:'365',
