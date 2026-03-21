@@ -298,7 +298,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
       <div class="form-title">Pricing</div>
       <div class="field-row">
         <div class="field"><label>Agreed Price (€)</label><input type="number" id="nj-agreed" placeholder="0.00" inputmode="decimal"></div>
-        <div class="field"><label>Hourly Rate (€)</label><input type="number" id="nj-rate" placeholder="65" inputmode="decimal" value=""></div>
+        <div class="field"><label>Hourly Rate (€)</label><input type="number" id="nj-rate" placeholder="0.00" inputmode="decimal" value=""></div>
       </div>
       <div class="field-row">
         <div class="field"><label>Hours Worked</label><input type="number" id="nj-hours" placeholder="0" inputmode="decimal" oninput="calcNew()"></div>
@@ -450,7 +450,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
     </div>
     <div class="form-card">
       <div class="form-title">Invoice Defaults</div>
-      <div class="field"><label>Default Hourly Rate (€)</label><input type="number" id="s-rate" placeholder="65" inputmode="decimal"></div>
+      <div class="field"><label>Default Hourly Rate (€)</label><input type="number" id="s-rate" placeholder="0.00" inputmode="decimal"></div>
       <div class="field"><label>Payment Terms</label>
         <select id="s-terms">
           <option value="Payment due on receipt">Due on receipt</option>
@@ -724,7 +724,7 @@ function resetNewJob(){
   ['nj-name','nj-customer','nj-phone','nj-email','nj-location','nj-agreed','nj-mats','nj-hours','nj-received','nj-notes'].forEach(id=>{
     const el=document.getElementById(id);if(el) el.value='';
   });
-  document.getElementById('nj-rate').value=settings.rate||'';
+  document.getElementById('nj-rate').value=settings.rate||65;
   document.getElementById('nj-interval').value='';
   document.getElementById('nj-calc').style.display='none';
   document.querySelectorAll('#screen-new-job .status-opt').forEach(o=>o.className='status-opt');
