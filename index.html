@@ -527,6 +527,13 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
       <div class="field"><label>Email</label><input type="email" id="s-email" placeholder="you@email.com" autocomplete="off"></div>
       <div class="field"><label>Address</label><input type="text" id="s-address" placeholder="Your business address" autocomplete="off"></div>
       <div class="field"><label>VAT Number (optional)</label><input type="text" id="s-vat" placeholder="IE..." autocomplete="off"></div>
+      <div class="field">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+          <input type="checkbox" id="s-vat-registered" style="width:18px;height:18px;accent-color:var(--yellow);">
+          <span>VAT Registered</span>
+        </label>
+        <div style="font-size:12px;color:var(--text2);margin-top:6px;line-height:1.45;">Turn this on only if you are VAT registered. If off, VAT will not appear on customer invoices.</div>
+      </div>
       <div class="field"><label>Job Title (optional)</label><input type="text" id="s-title" placeholder="e.g. Duty Holder, Electrical Contractor" autocomplete="off"></div>
       <div class="field"><label>IBAN (optional)</label><input type="text" id="s-iban" placeholder="IE88 BOFI 9044..." autocomplete="off"></div>
       <div class="field"><label>BIC (optional)</label><input type="text" id="s-bic" placeholder="e.g. BOFIIE2D" autocomplete="off"></div>
@@ -687,10 +694,21 @@ function quoteTarget(hours,rate,mats,vat,tax){
   const keepFactor=(1-taxRate);
   const vatFactor=(1-vatRate);
   if(keepFactor<=0||vatFactor<=0) return null;
-  const recommended=((labour/keepFactor)+materials)/vatFactor;
-  const beforeVat=recommended*vatFactor;
-  const vatAmount=recommended-beforeVat;
-  return {labour,materials,vatRate:vatRate*100,taxRate:taxRate*100,recommended,beforeVat,vatAmount};
+  const preTaxNeeded=labour/keepFactor;
+  const personalTaxCover=preTaxNeeded-labour;
+  const subtotalBeforeVat=preTaxNeeded+materials;
+  const recommended=subtotalBeforeVat/vatFactor;
+  const vatAmount=recommended-subtotalBeforeVat;
+  return {
+    labour,
+    materials,
+    vatRate:vatRate*100,
+    taxRate:taxRate*100,
+    recommended,
+    subtotalBeforeVat,
+    vatAmount,
+    personalTaxCover
+  };
 }
 
 function renderQuote(prefix){
@@ -710,18 +728,25 @@ function renderQuote(prefix){
   const gap=agreed?agreed-target.recommended:0;
   const gapColour=gap>=0?'var(--green)':'var(--red)';
   const gapLabel=gap>=0?'Quote Margin':'Under by';
+  const hasVat=target.vatRate>0.0001;
+  const hasTax=target.taxRate>0.0001;
+  let helperText='This covers materials and the time value you entered.';
+  if(hasVat&&hasTax) helperText='This covers materials, VAT, your personal tax, and the time value you entered.';
+  else if(hasVat) helperText='This covers materials, VAT, and the time value you entered.';
+  else if(hasTax) helperText='This covers materials, your personal tax, and the time value you entered.';
   card.style.display='block';
   grid.innerHTML=`
     <div style="background:var(--bg3);border-radius:14px;padding:14px 16px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.05);">
       <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Recommended Charge</div>
       <div style="font-size:28px;font-weight:800;color:var(--yellow);">€${target.recommended.toFixed(2)}</div>
-      <div style="font-size:13px;color:var(--text2);line-height:1.5;">This covers materials, VAT, your personal tax, and the time value you entered.</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.5;">${helperText}</div>
     </div>
     <div class="calc-grid">
       <div class="calc-item"><div class="calc-label">Time Value</div><div class="calc-value">€${target.labour.toFixed(2)}</div></div>
       <div class="calc-item"><div class="calc-label">Materials</div><div class="calc-value">€${target.materials.toFixed(2)}</div></div>
-      <div class="calc-item"><div class="calc-label">VAT in Quote</div><div class="calc-value">€${target.vatAmount.toFixed(2)}</div></div>
-      <div class="calc-item"><div class="calc-label">Before VAT</div><div class="calc-value">€${target.beforeVat.toFixed(2)}</div></div>
+      ${hasTax?`<div class="calc-item"><div class="calc-label">Tax Cover in Quote</div><div class="calc-value">€${target.personalTaxCover.toFixed(2)}</div></div>`:''}
+      ${hasVat?`<div class="calc-item"><div class="calc-label">VAT in Quote</div><div class="calc-value">€${target.vatAmount.toFixed(2)}</div></div>`:''}
+      <div class="calc-item"><div class="calc-label">${hasVat?'Subtotal Before VAT':'Recommended Total'}</div><div class="calc-value">€${(hasVat?target.subtotalBeforeVat:target.recommended).toFixed(2)}</div></div>
       ${agreed?`<div class="calc-item ${gap>=0?'profit-card':'loss-card'}"><div class="calc-label">Current Agreed</div><div class="calc-value">€${agreed.toFixed(2)}</div></div>
       <div class="calc-item ${gap>=0?'profit-card':'loss-card'}"><div class="calc-label">${gapLabel}</div><div class="calc-value" style="color:${gapColour}">${gap>=0?'+' : '-'}€${Math.abs(gap).toFixed(2)}</div></div>`:''}
     </div>`;
@@ -1131,6 +1156,7 @@ function openInvoice(id){
   currentJobId=id;
   const j=jobs.find(x=>x.id===id);if(!j) return;
   selectedTaxRate=0;
+  window.invAddVatToInvoice = false;
   const c=calc(j.hours,j.rate,j.mats,j.received,j.agreed,j.vatRate,j.taxRate);
   const invNo='INV-'+String(invNum).padStart(4,'0');
   const invDate=new Date().toLocaleDateString('en-IE');
@@ -1138,17 +1164,26 @@ function openInvoice(id){
   document.getElementById('invoice-content').innerHTML=`
     <div class="form-card" style="margin-bottom:12px">
       <div class="form-title">Invoice Options</div>
-      <div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.45;">VAT and personal tax are saved on the job and deducted in your job calculation before you build the invoice. They are not added again here unless you choose to show them as a line item.</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.45;">Personal tax is for your internal calculations only and never appears on the customer invoice. VAT only appears on the invoice if you are VAT registered and you switch it on below.</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px;">
           <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Saved VAT Rate</div>
           <div style="font-size:18px;font-weight:800;color:var(--text);">${(parseFloat(j.vatRate)||0).toFixed((String(j.vatRate||'').includes('.')?1:0))}%</div>
         </div>
         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px;">
-          <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Saved Tax Rate</div>
+          <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Saved Personal Tax</div>
           <div style="font-size:18px;font-weight:800;color:var(--text);">${(parseFloat(j.taxRate)||0).toFixed((String(j.taxRate||'').includes('.')?1:0))}%</div>
         </div>
       </div>
+      ${settings.vatRegistered && parseFloat(j.vatRate||0)>0 ? `
+      <div class="field" style="margin-bottom:12px">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+          <input type="checkbox" id="inv-add-vat" style="width:18px;height:18px;accent-color:var(--yellow);" onchange="refreshInvoice()">
+          <span>Add calculated VAT breakdown to invoice</span>
+        </label>
+        <div style="font-size:12px;color:var(--text2);margin-top:6px;line-height:1.45;">This shows VAT as a breakdown on the invoice without increasing the total due.</div>
+      </div>` : ``}
+      ${!settings.vatRegistered ? `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px;font-size:12px;color:var(--text2);line-height:1.45;">VAT Registered is off in Invoice Settings, so VAT will not be shown on this invoice.</div>` : ``}
       <div class="field" style="margin-bottom:0">
         <label>Due Date</label>
         <input type="text" id="inv-due-date" placeholder="e.g. 25/03/2026"
@@ -1239,6 +1274,7 @@ function renderLineItems(){
 
 function refreshInvoice(){
   const j=jobs.find(x=>x.id===currentJobId);if(!j) return;
+  window.invAddVatToInvoice = !!(document.getElementById('inv-add-vat') && document.getElementById('inv-add-vat').checked);
   const invNo=document.querySelector('.inv-no-val')||{textContent:'INV-'+String(invNum-1).padStart(4,'0')};
   const invDate=new Date().toLocaleDateString('en-IE');
   renderInvoicePreview(j, invNo.textContent||'INV-'+String(invNum-1).padStart(4,'0'), invDate);
@@ -1253,9 +1289,12 @@ function renderInvoicePreview(j, invNo, invDate){
   const items=window.invLineItems||[];
 
   // Calculate totals from line items
-  const subtotal=items.reduce((sum,item)=>sum+(item.price*(item.qty||1)),0);
-  const taxAmt=0;
-  const total=subtotal;
+  const rawSubtotal=items.reduce((sum,item)=>sum+(item.price*(item.qty||1)),0);
+  const vatRate=parseFloat(j.vatRate||0);
+  const showVatOnInvoice=!!(settings.vatRegistered && window.invAddVatToInvoice && vatRate>0);
+  const subtotal=showVatOnInvoice ? (rawSubtotal/(1+(vatRate/100))) : rawSubtotal;
+  const taxAmt=showVatOnInvoice ? (rawSubtotal-subtotal) : 0;
+  const total=rawSubtotal;
   const received=parseFloat(j.received||0);
   const balanceDue=total-received;
 
@@ -1334,11 +1373,11 @@ function renderInvoicePreview(j, invNo, invDate){
       <div style="padding:0 20px 16px;">
         <div style="background:#f9f9f9;border-radius:10px;padding:14px;">
           <div style="display:flex;justify-content:space-between;font-size:13px;color:#555;margin-bottom:6px;">
-            <span>Subtotal</span><span>€${subtotal.toFixed(2)}</span>
+            <span>${showVatOnInvoice ? 'Subtotal ex VAT' : 'Subtotal'}</span><span>€${subtotal.toFixed(2)}</span>
           </div>
-          ${selectedTaxRate>0?`
+          ${showVatOnInvoice?`
           <div style="display:flex;justify-content:space-between;font-size:13px;color:#555;margin-bottom:6px;">
-            <span>VAT ${selectedTaxRate}%</span><span>€${taxAmt.toFixed(2)}</span>
+            <span>VAT ${vatRate}%</span><span>€${taxAmt.toFixed(2)}</span>
           </div>`:''}
           <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:800;color:#111;padding-top:8px;border-top:1px solid #ddd;margin-bottom:8px;">
             <span>Total</span><span>€${total.toFixed(2)}</span>
@@ -1364,6 +1403,7 @@ function renderInvoicePreview(j, invNo, invDate){
       <div style="background:#f9f9f9;padding:14px 20px;text-align:center;border-top:1px solid #eee;">
         <div style="font-size:12px;color:#999;line-height:1.6;">
           ${biz.terms||'Payment due on receipt'}
+          ${!biz.vatRegistered ? `<br>Not VAT registered – no VAT charged` : ``}
           ${biz.footer?`<br><em>${biz.footer}</em>`:''}
         </div>
       </div>
@@ -1397,6 +1437,7 @@ function loadSettings(){
   document.getElementById('s-email').value=settings.email||'';
   document.getElementById('s-address').value=settings.address||'';
   document.getElementById('s-vat').value=settings.vat||'';
+  document.getElementById('s-vat-registered').checked=!!settings.vatRegistered;
   document.getElementById('s-title').value=settings.title||'';
   document.getElementById('s-iban').value=settings.iban||'';
   document.getElementById('s-bic').value=settings.bic||'';
@@ -1414,6 +1455,7 @@ function saveSettings(){
     email:document.getElementById('s-email').value.trim(),
     address:document.getElementById('s-address').value.trim(),
     vat:document.getElementById('s-vat').value.trim(),
+    vatRegistered:document.getElementById('s-vat-registered').checked,
     title:document.getElementById('s-title').value.trim(),
     iban:document.getElementById('s-iban').value.trim(),
     bic:document.getElementById('s-bic').value.trim(),
@@ -1641,6 +1683,7 @@ function saveSettingsToast(){
     email:document.getElementById('s-email').value.trim(),
     address:document.getElementById('s-address').value.trim(),
     vat:document.getElementById('s-vat').value.trim(),
+    vatRegistered:document.getElementById('s-vat-registered').checked,
     title:document.getElementById('s-title').value.trim(),
     iban:document.getElementById('s-iban').value.trim(),
     bic:document.getElementById('s-bic').value.trim(),
