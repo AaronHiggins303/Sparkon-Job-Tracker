@@ -947,7 +947,10 @@ function jobCardHTML(j){
   return `<div class="job-card status-${sk}" onclick="openJob('${j.id}')">
     <div class="job-card-top">
       <div style="flex:1;min-width:0">
-        <div class="job-name">${j.name}</div>
+        <div class="job-name">
+          ${j.name}
+          ${j.name && j.name.toLowerCase().includes('sample') ? '<span style="font-size:10px;background:#F5C518;color:#000;padding:2px 6px;border-radius:6px;margin-left:6px;">SAMPLE</span>' : ''}
+        </div>
         ${j.customer?`<div class="job-sub">👤 ${j.customer}${j.location?' · '+j.location:''}</div>`:''}
         ${iv?`<span class="interval-pill ${iv.cls}">${iv.dot} ${iv.label}</span>`:''}
       </div>
