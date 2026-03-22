@@ -1125,6 +1125,7 @@ function confirmDeleteJob(){
 
 // ---- INVOICE ----
 let selectedTaxRate = 0;
+let activeOverlay = null;
 
 function openInvoice(id){
   currentJobId=id;
@@ -1137,7 +1138,17 @@ function openInvoice(id){
   document.getElementById('invoice-content').innerHTML=`
     <div class="form-card" style="margin-bottom:12px">
       <div class="form-title">Invoice Options</div>
-      <div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.45;">Job tax is already handled in the job calculation. Add any VAT or RCT wording as a line item only if you want it shown on the invoice.</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.45;">VAT and personal tax are saved on the job and deducted in your job calculation before you build the invoice. They are not added again here unless you choose to show them as a line item.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px;">
+          <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Saved VAT Rate</div>
+          <div style="font-size:18px;font-weight:800;color:var(--text);">${(parseFloat(j.vatRate)||0).toFixed((String(j.vatRate||'').includes('.')?1:0))}%</div>
+        </div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px;">
+          <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Saved Tax Rate</div>
+          <div style="font-size:18px;font-weight:800;color:var(--text);">${(parseFloat(j.taxRate)||0).toFixed((String(j.taxRate||'').includes('.')?1:0))}%</div>
+        </div>
+      </div>
       <div class="field" style="margin-bottom:0">
         <label>Due Date</label>
         <input type="text" id="inv-due-date" placeholder="e.g. 25/03/2026"
@@ -1496,9 +1507,9 @@ function shareInvoice(){
 }
 
 function closeOverlay(){
-  // Remove any fullscreen overlay and go back to settings
-  const overlays = document.querySelectorAll('div[style*="position:fixed"][style*="z-index:9000"]');
-  overlays.forEach(el => el.remove());
+  const overlay = document.getElementById('sparkon-overlay') || activeOverlay;
+  if(overlay) overlay.remove();
+  activeOverlay = null;
   showScreen('settings', false);
 }
 
@@ -1514,8 +1525,11 @@ function exportData(){
   const dateStr=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
 
   // Show backup screen with the data ready to copy or share
+  closeOverlay();
   const overlay=document.createElement('div');
+  overlay.id='sparkon-overlay';
   overlay.style.cssText='position:fixed;inset:0;background:#0a0a0f;z-index:9000;overflow-y:auto;padding:20px;';
+  activeOverlay = overlay;
   overlay.innerHTML=`
     <div style="max-width:600px;margin:0 auto;">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
@@ -1552,8 +1566,11 @@ function exportData(){
 }
 
 function importData(){
+  closeOverlay();
   const overlay=document.createElement('div');
+  overlay.id='sparkon-overlay';
   overlay.style.cssText='position:fixed;inset:0;background:#0a0a0f;z-index:9000;overflow-y:auto;padding:20px;';
+  activeOverlay = overlay;
   overlay.innerHTML=`
     <div style="max-width:600px;margin:0 auto;">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
@@ -1584,8 +1601,7 @@ function restoreFromText(){
     jobs=data.jobs;
     if(data.settings) settings=data.settings;
     save();saveSets();
-    // Close all overlays
-    document.querySelectorAll('div[style*="z-index:9000"]').forEach(el=>el.remove());
+    closeOverlay();
     showToast('✓ '+jobs.length+' jobs restored!','#22c55e');
     showScreen('dashboard',false);
   } catch(err){
