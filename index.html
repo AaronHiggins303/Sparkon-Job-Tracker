@@ -1198,14 +1198,6 @@ function openInvoice(id){
           <div style="font-size:18px;font-weight:800;color:var(--text);">${(parseFloat(j.taxRate)||0).toFixed((String(j.taxRate||'').includes('.')?1:0))}%</div>
         </div>
       </div>
-      ${settings.vatRegistered && parseFloat(j.vatRate||0)>0 ? `
-      <div class="field" style="margin-bottom:12px">
-        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
-          <input type="checkbox" id="inv-add-vat" style="width:18px;height:18px;accent-color:var(--yellow);" onchange="refreshInvoice()" checked>
-          <span>Add calculated VAT breakdown to invoice</span>
-        </label>
-        <div style="font-size:12px;color:var(--text2);margin-top:6px;line-height:1.45;">This shows VAT as a breakdown on the invoice without increasing the total due.</div>
-      </div>` : ``}
       ${!settings.vatRegistered ? `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px;font-size:12px;color:var(--text2);line-height:1.45;">VAT Registered is off in Invoice Settings, so VAT will not be shown on this invoice.</div>` : ``}
       <div class="field" style="margin-bottom:0">
         <label>Due Date</label>
@@ -1297,7 +1289,7 @@ function renderLineItems(){
 
 function refreshInvoice(){
   const j=jobs.find(x=>x.id===currentJobId);if(!j) return;
-  window.invAddVatToInvoice = !!(document.getElementById('inv-add-vat') && document.getElementById('inv-add-vat').checked);
+  window.invAddVatToInvoice = true;
   const invNo=document.querySelector('.inv-no-val')||{textContent:'INV-'+String(invNum-1).padStart(4,'0')};
   const invDate=new Date().toLocaleDateString('en-IE');
   renderInvoicePreview(j, invNo.textContent||'INV-'+String(invNum-1).padStart(4,'0'), invDate);
