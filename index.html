@@ -528,10 +528,12 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
       <div class="field"><label>Address</label><input type="text" id="s-address" placeholder="Your business address" autocomplete="off"></div>
       <div class="field"><label>VAT Number (optional)</label><input type="text" id="s-vat" placeholder="IE..." autocomplete="off"></div>
       <div class="field">
-        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
-          <input type="checkbox" id="s-vat-registered" style="width:18px;height:18px;accent-color:var(--yellow);">
-          <span>VAT Registered</span>
-        </label>
+        <label>VAT Registered</label>
+        <button type="button" id="vat-registered-toggle" onclick="toggleVatRegistered()" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--bg3);color:var(--text);font-size:15px;font-weight:700;font-family:'Barlow',sans-serif;cursor:pointer;">
+          <span id="vat-registered-label">VAT Registered: OFF</span>
+          <span id="vat-registered-pill" style="display:inline-flex;align-items:center;justify-content:center;min-width:54px;height:28px;padding:0 10px;border-radius:999px;background:#3a3a3a;color:#fff;font-size:12px;font-weight:800;">OFF</span>
+        </button>
+        <input type="checkbox" id="s-vat-registered" style="display:none;">
         <div style="font-size:12px;color:var(--text2);margin-top:6px;line-height:1.45;">Turn this on only if you are VAT registered. If off, VAT will not appear on customer invoices.</div>
       </div>
       <div class="field"><label>Job Title (optional)</label><input type="text" id="s-title" placeholder="e.g. Duty Holder, Electrical Contractor" autocomplete="off"></div>
@@ -604,6 +606,27 @@ let invNum = parseInt(localStorage.getItem('sparkon_v4_inv') || '1');
 function save(){ localStorage.setItem('sparkon_v4_jobs', JSON.stringify(jobs)); }
 function saveSets(){ localStorage.setItem('sparkon_v4_settings', JSON.stringify(settings)); }
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+function updateVatRegisteredUI(){
+  const cb=document.getElementById('s-vat-registered');
+  const btn=document.getElementById('vat-registered-toggle');
+  const label=document.getElementById('vat-registered-label');
+  const pill=document.getElementById('vat-registered-pill');
+  if(!cb || !btn || !label || !pill) return;
+  const on=!!cb.checked;
+  btn.style.background=on ? '#16361f' : 'var(--bg3)';
+  btn.style.borderColor=on ? '#22c55e' : 'var(--border)';
+  label.textContent='VAT Registered: ' + (on ? 'ON' : 'OFF');
+  pill.textContent=on ? 'ON' : 'OFF';
+  pill.style.background=on ? '#22c55e' : '#3a3a3a';
+  pill.style.color='#fff';
+}
+function toggleVatRegistered(){
+  const cb=document.getElementById('s-vat-registered');
+  if(!cb) return;
+  cb.checked=!cb.checked;
+  updateVatRegisteredUI();
+}
 
 // ---- CALC ----
 function getRateValue(prefix,type){
@@ -1156,7 +1179,7 @@ function openInvoice(id){
   currentJobId=id;
   const j=jobs.find(x=>x.id===id);if(!j) return;
   selectedTaxRate=0;
-  window.invAddVatToInvoice = false;
+  window.invAddVatToInvoice = !!(settings.vatRegistered && parseFloat(j.vatRate||0)>0);
   const c=calc(j.hours,j.rate,j.mats,j.received,j.agreed,j.vatRate,j.taxRate);
   const invNo='INV-'+String(invNum).padStart(4,'0');
   const invDate=new Date().toLocaleDateString('en-IE');
@@ -1178,7 +1201,7 @@ function openInvoice(id){
       ${settings.vatRegistered && parseFloat(j.vatRate||0)>0 ? `
       <div class="field" style="margin-bottom:12px">
         <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
-          <input type="checkbox" id="inv-add-vat" style="width:18px;height:18px;accent-color:var(--yellow);" onchange="refreshInvoice()">
+          <input type="checkbox" id="inv-add-vat" style="width:18px;height:18px;accent-color:var(--yellow);" onchange="refreshInvoice()" checked>
           <span>Add calculated VAT breakdown to invoice</span>
         </label>
         <div style="font-size:12px;color:var(--text2);margin-top:6px;line-height:1.45;">This shows VAT as a breakdown on the invoice without increasing the total due.</div>
@@ -1438,6 +1461,7 @@ function loadSettings(){
   document.getElementById('s-address').value=settings.address||'';
   document.getElementById('s-vat').value=settings.vat||'';
   document.getElementById('s-vat-registered').checked=!!settings.vatRegistered;
+  updateVatRegisteredUI();
   document.getElementById('s-title').value=settings.title||'';
   document.getElementById('s-iban').value=settings.iban||'';
   document.getElementById('s-bic').value=settings.bic||'';
@@ -1464,6 +1488,7 @@ function saveSettings(){
     footer:document.getElementById('s-footer').value.trim()
   };
   saveSets();
+  updateVatRegisteredUI();
   // Show in-app toast confirmation instead of alert (alert blocked on some mobile browsers)
   let toast=document.getElementById('settings-toast');
   if(!toast){
