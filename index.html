@@ -212,6 +212,27 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
 .print-hint{background:var(--yellow-dim);border:1px solid rgba(245,197,24,0.2);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:10px;font-size:13px;color:var(--text2);line-height:1.5;text-align:center;}
 .print-hint strong{color:var(--yellow);display:block;font-size:14px;margin-bottom:3px;}
 </style>
+
+<style>
+#invoice-preview {
+  background:#fff;
+  color:#000;
+  padding:20px;
+  font-family:Arial, sans-serif;
+}
+#invoice-preview h1, #invoice-preview h2 {
+  text-align:center;
+  margin:10px 0;
+}
+#invoice-preview .total, #invoice-preview strong {
+  font-size:20px;
+  font-weight:bold;
+}
+#invoice-preview hr {
+  border-top:2px solid #000;
+}
+</style>
+
 </head>
 <body>
 
@@ -290,7 +311,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
 <div id="screen-new-job" class="screen">
   <div class="topbar no-print">
     <button class="topbar-back" onclick="goBack()">←</button>
-    <div class="topbar-title">Sample Job (Tap to Edit or Delete)</div>
+    <div class="topbar-title" id="new-job-title">New Job</div>
     <button class="topbar-action" onclick="saveNewJob()">Save</button>
   </div>
   <div class="content">
@@ -319,14 +340,14 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
     <div class="form-card">
       <div class="form-title">Pricing</div>
       <div class="field-row">
-        <div class="field"><label>Agreed Price (€)</label><input type="number" id="nj-agreed" placeholder="0.00" inputmode="decimal" oninput="calcNew()"></div>
-        <div class="field"><label>Hourly Rate (€)</label><input type="number" id="nj-rate" placeholder="0.00" inputmode="decimal" value="" oninput="calcNew()"></div>
+        <div class="field"><label>Estimate / Final Price (€)</label><input type="number" id="nj-agreed" placeholder="Optional - use for quote or agreed price" inputmode="decimal" oninput="calcNew()"></div>
+        <div class="field"><label>Hourly Rate (€)</label><input type="number" id="nj-rate" placeholder="What you charge per hour" inputmode="decimal" value="" oninput="calcNew()"></div>
       </div>
       <div class="field-row">
-        <div class="field"><label>Hours Worked</label><input type="number" id="nj-hours" placeholder="0" inputmode="decimal" oninput="calcNew()"></div>
-        <div class="field"><label>Materials (€)</label><input type="number" id="nj-mats" placeholder="0.00" inputmode="decimal" oninput="calcNew()"></div>
+        <div class="field"><label>Time Spent (Hours)</label><input type="number" id="nj-hours" placeholder="Enter actual OR estimated hours (optional)" inputmode="decimal" oninput="calcNew()"></div>
+        <div class="field"><label>Materials Cost (€)</label><input type="number" id="nj-mats" placeholder="What you spent on materials" inputmode="decimal" oninput="calcNew()"></div>
       </div>
-      <div class="field"><label>Money Received (€)</label><input type="number" id="nj-received" placeholder="0.00" inputmode="decimal" oninput="calcNew()"></div>
+      <div class="field"><label>Money Received (€)</label><input type="number" id="nj-received" placeholder="Paid so far OR expected payment" inputmode="decimal" oninput="calcNew()"></div>
       <div class="field-row">
         <div class="field">
           <label>VAT Rate (%)</label>
@@ -427,14 +448,14 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
     <div class="form-card">
       <div class="form-title">Pricing</div>
       <div class="field-row">
-        <div class="field"><label>Agreed Price (€)</label><input type="number" id="ej-agreed" inputmode="decimal" oninput="calcEdit()"></div>
-        <div class="field"><label>Hourly Rate (€)</label><input type="number" id="ej-rate" inputmode="decimal" oninput="calcEdit()"></div>
+        <div class="field"><label>Estimate / Final Price (€)</label><input type="number" id="ej-agreed" placeholder="Optional - use for quote or agreed price" inputmode="decimal" oninput="calcEdit()"></div>
+        <div class="field"><label>Hourly Rate (€)</label><input type="number" id="ej-rate" placeholder="What you charge per hour" inputmode="decimal" oninput="calcEdit()"></div>
       </div>
       <div class="field-row">
-        <div class="field"><label>Hours Worked</label><input type="number" id="ej-hours" inputmode="decimal" oninput="calcEdit()"></div>
-        <div class="field"><label>Materials (€)</label><input type="number" id="ej-mats" inputmode="decimal" oninput="calcEdit()"></div>
+        <div class="field"><label>Time Spent (Hours)</label><input type="number" id="ej-hours" placeholder="Enter actual OR estimated hours (optional)" inputmode="decimal" oninput="calcEdit()"></div>
+        <div class="field"><label>Materials Cost (€)</label><input type="number" id="ej-mats" placeholder="What you spent on materials" inputmode="decimal" oninput="calcEdit()"></div>
       </div>
-      <div class="field"><label>Money Received (€)</label><input type="number" id="ej-received" inputmode="decimal" oninput="calcEdit()"></div>
+      <div class="field"><label>Money Received (€)</label><input type="number" id="ej-received" placeholder="Paid so far OR expected payment" inputmode="decimal" oninput="calcEdit()"></div>
       <div class="field-row">
         <div class="field">
           <label>VAT Rate (%)</label>
@@ -947,10 +968,7 @@ function jobCardHTML(j){
   return `<div class="job-card status-${sk}" onclick="openJob('${j.id}')">
     <div class="job-card-top">
       <div style="flex:1;min-width:0">
-        <div class="job-name">
-          ${j.name}
-          ${j.name && j.name.toLowerCase().includes('sample') ? '<span style="font-size:10px;background:#F5C518;color:#000;padding:2px 6px;border-radius:6px;margin-left:6px;">SAMPLE</span>' : ''}
-        </div>
+        <div class="job-name">${j.name}</div>
         ${j.customer?`<div class="job-sub">👤 ${j.customer}${j.location?' · '+j.location:''}</div>`:''}
         ${iv?`<span class="interval-pill ${iv.cls}">${iv.dot} ${iv.label}</span>`:''}
       </div>
@@ -979,6 +997,7 @@ function resetNewJob(){
   document.getElementById('nj-calc').style.display='none';
   const qc=document.getElementById('nj-quote-card'); if(qc) qc.style.display='none';
   const qg=document.getElementById('nj-quote-grid'); if(qg) qg.innerHTML='';
+  const t=document.getElementById('new-job-title'); if(t) t.textContent='New Job';
   document.querySelectorAll('#screen-new-job .status-opt').forEach(o=>o.className='status-opt');
   document.querySelector('#screen-new-job .status-opt').classList.add('sel-quoted');
 }
