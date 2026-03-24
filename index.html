@@ -212,27 +212,6 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
 .print-hint{background:var(--yellow-dim);border:1px solid rgba(245,197,24,0.2);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:10px;font-size:13px;color:var(--text2);line-height:1.5;text-align:center;}
 .print-hint strong{color:var(--yellow);display:block;font-size:14px;margin-bottom:3px;}
 </style>
-
-<style>
-#invoice-preview {
-  background:#fff;
-  color:#000;
-  padding:20px;
-  font-family:Arial, sans-serif;
-}
-#invoice-preview h1, #invoice-preview h2 {
-  text-align:center;
-  margin:10px 0;
-}
-#invoice-preview .total, #invoice-preview strong {
-  font-size:20px;
-  font-weight:bold;
-}
-#invoice-preview hr {
-  border-top:2px solid #000;
-}
-</style>
-
 </head>
 <body>
 
@@ -317,7 +296,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
   <div class="content">
     <div class="form-card">
       <div class="form-title">Job Details</div>
-      <div class="field"><label>Job Name *</label><input type="text" id="nj-name" placeholder="e.g. Kitchen Rewire" autocomplete="off"></div>
+      <div class="field"><label>Job Description *</label><input type="text" id="nj-name" placeholder="e.g. Kitchen Rewire" autocomplete="off"></div>
       <div class="field">
         <label>Status</label>
         <div class="status-row">
@@ -340,14 +319,14 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
     <div class="form-card">
       <div class="form-title">Pricing</div>
       <div class="field-row">
-        <div class="field"><label>Estimate / Final Price (€)</label><input type="number" id="nj-agreed" placeholder="Optional - use for quote or agreed price" inputmode="decimal" oninput="calcNew()"></div>
-        <div class="field"><label>Hourly Rate (€)</label><input type="number" id="nj-rate" placeholder="What you charge per hour" inputmode="decimal" value="" oninput="calcNew()"></div>
+        <div class="field"><label>Agreed Price (€)</label><input type="number" id="nj-agreed" placeholder="0.00" inputmode="decimal" oninput="calcNew()"></div>
+        <div class="field"><label>Hourly Rate (€)</label><input type="number" id="nj-rate" placeholder="0.00" inputmode="decimal" value="" oninput="calcNew()"></div>
       </div>
       <div class="field-row">
-        <div class="field"><label>Time Spent (Hours)</label><input type="number" id="nj-hours" placeholder="Enter actual OR estimated hours (optional)" inputmode="decimal" oninput="calcNew()"></div>
-        <div class="field"><label>Materials Cost (€)</label><input type="number" id="nj-mats" placeholder="What you spent on materials" inputmode="decimal" oninput="calcNew()"></div>
+        <div class="field"><label>Hours Worked</label><input type="number" id="nj-hours" placeholder="0" inputmode="decimal" oninput="calcNew()"></div>
+        <div class="field"><label>Materials (€)</label><input type="number" id="nj-mats" placeholder="0.00" inputmode="decimal" oninput="calcNew()"></div>
       </div>
-      <div class="field"><label>Money Received (€)</label><input type="number" id="nj-received" placeholder="Paid so far OR expected payment" inputmode="decimal" oninput="calcNew()"></div>
+      <div class="field"><label>Money Received (€)</label><input type="number" id="nj-received" placeholder="0.00" inputmode="decimal" oninput="calcNew()"></div>
       <div class="field-row">
         <div class="field">
           <label>VAT Rate (%)</label>
@@ -425,7 +404,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
   <div class="content">
     <div class="form-card">
       <div class="form-title">Job Details</div>
-      <div class="field"><label>Job Name *</label><input type="text" id="ej-name" autocomplete="off"></div>
+      <div class="field"><label>Job Description *</label><input type="text" id="ej-name" autocomplete="off"></div>
       <div class="field">
         <label>Status</label>
         <div class="status-row">
@@ -448,14 +427,14 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
     <div class="form-card">
       <div class="form-title">Pricing</div>
       <div class="field-row">
-        <div class="field"><label>Estimate / Final Price (€)</label><input type="number" id="ej-agreed" placeholder="Optional - use for quote or agreed price" inputmode="decimal" oninput="calcEdit()"></div>
-        <div class="field"><label>Hourly Rate (€)</label><input type="number" id="ej-rate" placeholder="What you charge per hour" inputmode="decimal" oninput="calcEdit()"></div>
+        <div class="field"><label>Agreed Price (€)</label><input type="number" id="ej-agreed" inputmode="decimal" oninput="calcEdit()"></div>
+        <div class="field"><label>Hourly Rate (€)</label><input type="number" id="ej-rate" inputmode="decimal" oninput="calcEdit()"></div>
       </div>
       <div class="field-row">
-        <div class="field"><label>Time Spent (Hours)</label><input type="number" id="ej-hours" placeholder="Enter actual OR estimated hours (optional)" inputmode="decimal" oninput="calcEdit()"></div>
-        <div class="field"><label>Materials Cost (€)</label><input type="number" id="ej-mats" placeholder="What you spent on materials" inputmode="decimal" oninput="calcEdit()"></div>
+        <div class="field"><label>Hours Worked</label><input type="number" id="ej-hours" inputmode="decimal" oninput="calcEdit()"></div>
+        <div class="field"><label>Materials (€)</label><input type="number" id="ej-mats" inputmode="decimal" oninput="calcEdit()"></div>
       </div>
-      <div class="field"><label>Money Received (€)</label><input type="number" id="ej-received" placeholder="Paid so far OR expected payment" inputmode="decimal" oninput="calcEdit()"></div>
+      <div class="field"><label>Money Received (€)</label><input type="number" id="ej-received" inputmode="decimal" oninput="calcEdit()"></div>
       <div class="field-row">
         <div class="field">
           <label>VAT Rate (%)</label>
@@ -918,7 +897,7 @@ function renderDash(){
     <div class="quick-grid">
       <div class="quick-btn primary" onclick="showScreen('new-job')">
         <div class="quick-icon">➕</div>
-        <div class="quick-name">Sample Job (Tap to Edit or Delete)</div>
+        <div class="quick-name">Quick Tap New Job</div>
         <div class="quick-desc">Start tracking a new job</div>
       </div>
       <div class="quick-btn" onclick="openAddTime()">
@@ -968,7 +947,10 @@ function jobCardHTML(j){
   return `<div class="job-card status-${sk}" onclick="openJob('${j.id}')">
     <div class="job-card-top">
       <div style="flex:1;min-width:0">
-        <div class="job-name">${j.name}</div>
+        <div class="job-name">
+          ${j.name}
+          ${j.name && j.name.toLowerCase().includes('sample') ? '<span style="font-size:10px;background:#F5C518;color:#000;padding:2px 6px;border-radius:6px;margin-left:6px;">SAMPLE</span>' : ''}
+        </div>
         ${j.customer?`<div class="job-sub">👤 ${j.customer}${j.location?' · '+j.location:''}</div>`:''}
         ${iv?`<span class="interval-pill ${iv.cls}">${iv.dot} ${iv.label}</span>`:''}
       </div>
@@ -997,14 +979,15 @@ function resetNewJob(){
   document.getElementById('nj-calc').style.display='none';
   const qc=document.getElementById('nj-quote-card'); if(qc) qc.style.display='none';
   const qg=document.getElementById('nj-quote-grid'); if(qg) qg.innerHTML='';
-  const t=document.getElementById('new-job-title'); if(t) t.textContent='New Job';
   document.querySelectorAll('#screen-new-job .status-opt').forEach(o=>o.className='status-opt');
   document.querySelector('#screen-new-job .status-opt').classList.add('sel-quoted');
+  const t=document.getElementById('new-job-title');
+  if(t) t.textContent='New Job';
 }
 
 function saveNewJob(){
   const name=document.getElementById('nj-name').value.trim();
-  if(!name){alert('Please enter a job name.');return;}
+  if(!name){alert('Please enter a job description.');return;}
   const j={
     id:uid(),name,
     customer:document.getElementById('nj-customer').value.trim(),
@@ -1145,7 +1128,7 @@ function showEditJob(){
 
 function saveEditJob(){
   const name=document.getElementById('ej-name').value.trim();
-  if(!name){alert('Please enter a job name.');return;}
+  if(!name){alert('Please enter a job description.');return;}
   const idx=jobs.findIndex(x=>x.id===currentJobId);if(idx===-1) return;
   jobs[idx]={...jobs[idx],name,
     customer:document.getElementById('ej-customer').value.trim(),
@@ -1205,6 +1188,7 @@ function openInvoice(id){
   const j=jobs.find(x=>x.id===id);if(!j) return;
   selectedTaxRate=0;
   window.invAddVatToInvoice = !!(settings.vatRegistered && parseFloat(j.vatRate||0)>0);
+  window.invPaymentDisplay = 'full';
   const c=calc(j.hours,j.rate,j.mats,j.received,j.agreed,j.vatRate,j.taxRate);
   const invNo='INV-'+String(invNum).padStart(4,'0');
   const invDate=new Date().toLocaleDateString('en-IE');
@@ -1224,12 +1208,29 @@ function openInvoice(id){
         </div>
       </div>
       ${!settings.vatRegistered ? `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px;font-size:12px;color:var(--text2);line-height:1.45;">VAT Registered is off in Invoice Settings, so VAT will not be shown on this invoice.</div>` : ``}
-      <div class="field" style="margin-bottom:0">
+      <div class="field" style="margin-bottom:12px">
         <label>Due Date</label>
         <input type="text" id="inv-due-date" placeholder="e.g. 25/03/2026"
           style="width:100%;background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:13px 14px;font-size:16px;font-family:'Barlow',sans-serif;color:var(--text);outline:none;"
           oninput="refreshInvoice()">
       </div>
+      <div class="field" style="margin-bottom:12px">
+        <label>Payment Display</label>
+        <select id="inv-payment-display"
+          style="width:100%;background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:13px 14px;font-size:16px;font-family:'Barlow',sans-serif;color:var(--text);outline:none;"
+          onchange="window.invPaymentDisplay=this.value;refreshInvoice()">
+          <option value="remaining">Invoice remaining balance only</option>
+          <option value="deposit">Show deposit on invoice</option>
+          <option value="full">Invoice full amount</option>
+        </select>
+      </div>
+      <label style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px 14px;cursor:pointer;">
+        <div>
+          <div style="font-weight:700;color:var(--text);font-size:14px;">Show materials on invoice</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:2px;">Display materials as a separate line</div>
+        </div>
+        <input type="checkbox" id="inv-show-materials" onchange="window.invShowMaterials=this.checked;refreshInvoice()" style="width:20px;height:20px;accent-color:#F5C518;cursor:pointer;">
+      </label>
     </div>
     <div class="form-card" style="margin-bottom:12px">
       <div class="form-title">Line Items</div>
@@ -1255,9 +1256,15 @@ function openInvoice(id){
   const due = new Date();
   due.setDate(due.getDate() + 7);
   document.getElementById('inv-due-date').value = due.toLocaleDateString('en-IE');
+  const paymentSel=document.getElementById('inv-payment-display');
+  if(paymentSel) paymentSel.value = window.invPaymentDisplay || 'remaining';
+  const matToggle=document.getElementById('inv-show-materials');
+  if(matToggle) matToggle.checked = !!window.invShowMaterials;
 
   // Set default line items from job
   window.invLineItems = [];
+  window.invAutoFromAgreed = parseFloat(j.agreed) > 0;
+  window.invShowMaterials = false;
   if(parseFloat(j.agreed) > 0){
     window.invLineItems.push({desc: j.name, note: j.notes||'', qty: 1, price: parseFloat(j.agreed)});
   } else {
@@ -1326,28 +1333,57 @@ function renderInvoicePreview(j, invNo, invDate){
   const biz=settings;
   const accent=biz.accentColour||'#F5C518';
   const dueDate=document.getElementById('inv-due-date')?document.getElementById('inv-due-date').value:'';
-  const items=window.invLineItems||[];
+  const items=(window.invLineItems||[]).map(item=>({...item}));
+  const paymentMode=window.invPaymentDisplay||'full';
+  const showMaterials=!!window.invShowMaterials;
 
-  // Calculate totals from line items
-  const rawSubtotal=items.reduce((sum,item)=>sum+(item.price*(item.qty||1)),0);
+  const agreed=parseFloat(j.agreed||0);
+  const received=parseFloat(j.received||0);
   const vatRate=parseFloat(j.vatRate||0);
   const showVatOnInvoice=!!(settings.vatRegistered && window.invAddVatToInvoice && vatRate>0);
-  const subtotal=showVatOnInvoice ? (rawSubtotal/(1+(vatRate/100))) : rawSubtotal;
-  const taxAmt=showVatOnInvoice ? (rawSubtotal-subtotal) : 0;
-  const total=rawSubtotal;
-  const received=parseFloat(j.received||0);
-  const balanceDue=total-received;
+  const materialsAmount=parseFloat(j.mats||0);
+
+  let displayItems=items.map(item=>({...item}));
+  let invoiceBaseTotal=items.reduce((sum,item)=>sum+((parseFloat(item.price)||0)*(parseFloat(item.qty)||1)),0);
+
+  if(window.invAutoFromAgreed && agreed>0 && items.length===1){
+    const baseAmount = paymentMode==='remaining' ? Math.max(agreed-received,0) : agreed;
+    invoiceBaseTotal = baseAmount;
+
+    if(showMaterials && materialsAmount>0){
+      const shownMaterials = Math.min(materialsAmount, baseAmount);
+      const mainAmount = Math.max(baseAmount - shownMaterials, 0);
+      displayItems = [];
+      if(mainAmount > 0){
+        displayItems.push({...items[0], price:mainAmount});
+      }
+      if(shownMaterials > 0){
+        displayItems.push({desc:'Materials', note:'', qty:1, price:shownMaterials});
+      }
+    } else {
+      const qty=parseFloat(items[0].qty)||1;
+      displayItems=[{...items[0], price:baseAmount/qty}];
+    }
+  } else {
+    if(paymentMode==='remaining'){
+      invoiceBaseTotal=Math.max(invoiceBaseTotal-received,0);
+    } else {
+      invoiceBaseTotal=items.reduce((sum,item)=>sum+((parseFloat(item.price)||0)*(parseFloat(item.qty)||1)),0);
+    }
+  }
+
+  const subtotal=showVatOnInvoice ? (invoiceBaseTotal/(1+(vatRate/100))) : invoiceBaseTotal;
+  const taxAmt=showVatOnInvoice ? (invoiceBaseTotal-subtotal) : 0;
+  const total=invoiceBaseTotal;
+  const balanceDue=paymentMode==='deposit' ? Math.max(total-received,0) : total;
 
   const bizWarn=!biz.bizname?`<div style="background:#FFF3CD;border:1px solid #F5C518;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:#856404;">⚠️ Go to <strong>Settings</strong> to add your business details.</div>`:'';
 
   document.getElementById('invoice-preview').innerHTML=`
     ${bizWarn}
     <div style="background:white;border-radius:var(--radius);overflow:hidden;margin-bottom:12px;font-family:'Barlow',sans-serif;color:#111;">
-
-      <!-- TOP COLOUR BAR -->
       <div style="background:${accent};height:6px;width:100%;"></div>
 
-      <!-- HEADER -->
       <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:20px 20px 16px;">
         <div style="border-left:4px solid ${accent};padding-left:12px;">
           <div style="font-weight:800;font-size:17px;color:#111;margin-bottom:2px;">${biz.bizname||'Your Business Name'}</div>
@@ -1364,7 +1400,6 @@ function renderInvoicePreview(j, invNo, invDate){
 
       <div style="height:1px;background:#eee;margin:0 20px;"></div>
 
-      <!-- BILL TO + INVOICE DETAILS -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px 20px;">
         <div>
           <div style="font-size:10px;font-weight:800;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Bill To</div>
@@ -1383,7 +1418,6 @@ function renderInvoicePreview(j, invNo, invDate){
 
       <div style="height:1px;background:#eee;margin:0 20px;"></div>
 
-      <!-- LINE ITEMS TABLE -->
       <div style="padding:16px 20px;">
         <table style="width:100%;border-collapse:collapse;font-size:13px;">
           <thead>
@@ -1395,21 +1429,20 @@ function renderInvoicePreview(j, invNo, invDate){
             </tr>
           </thead>
           <tbody>
-            ${items.map(item=>`
+            ${displayItems.map(item=>`
             <tr style="border-bottom:1px solid #eee;">
               <td style="padding:10px 10px;">
                 <div style="font-weight:600;color:#111;">${item.desc||'Item'}</div>
                 ${item.note?`<div style="font-size:11px;color:#777;margin-top:2px;">${item.note}</div>`:''}
               </td>
               <td style="padding:10px;text-align:center;color:#555;">${item.qty||1}</td>
-              <td style="padding:10px;text-align:right;color:#555;">€${(item.price||0).toFixed(2)}</td>
-              <td style="padding:10px;text-align:right;font-weight:700;color:#111;">€${((item.price||0)*(item.qty||1)).toFixed(2)}</td>
+              <td style="padding:10px;text-align:right;color:#555;">€${(parseFloat(item.price)||0).toFixed(2)}</td>
+              <td style="padding:10px;text-align:right;font-weight:700;color:#111;">€${((parseFloat(item.price)||0)*(parseFloat(item.qty)||1)).toFixed(2)}</td>
             </tr>`).join('')}
           </tbody>
         </table>
       </div>
 
-      <!-- TOTALS -->
       <div style="padding:0 20px 16px;">
         <div style="background:#f9f9f9;border-radius:10px;padding:14px;">
           <div style="display:flex;justify-content:space-between;font-size:13px;color:#555;margin-bottom:6px;">
@@ -1419,18 +1452,30 @@ function renderInvoicePreview(j, invNo, invDate){
           <div style="display:flex;justify-content:space-between;font-size:13px;color:#555;margin-bottom:6px;">
             <span>VAT ${vatRate}%</span><span>€${taxAmt.toFixed(2)}</span>
           </div>`:''}
+
+          ${paymentMode==='deposit' ? `
           <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:800;color:#111;padding-top:8px;border-top:1px solid #ddd;margin-bottom:8px;">
             <span>Total</span><span>€${total.toFixed(2)}</span>
           </div>
-          <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:800;padding-top:10px;border-top:3px solid ${accent};">
-            <span style="color:#111;">Total Due</span>
-            <span style="color:${balanceDue>0.01?'#e53e3e':'#16a34a'};font-size:18px;">${balanceDue>0.01?'€'+balanceDue.toFixed(2):'✓ Paid'}</span>
+          <div style="display:flex;justify-content:space-between;font-size:13px;color:#555;margin-bottom:8px;">
+            <span>Deposit received</span><span>-€${received.toFixed(2)}</span>
           </div>
+          <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:800;padding-top:10px;border-top:3px solid ${accent};">
+            <span style="color:#111;">Balance Due</span>
+            <span style="color:${balanceDue>0.01?'#e53e3e':'#16a34a'};font-size:18px;">${balanceDue>0.01?'€'+balanceDue.toFixed(2):'✓ Paid'}</span>
+          </div>` : paymentMode==='full' ? `
+          <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:800;padding-top:10px;border-top:3px solid ${accent};">
+            <span style="color:#111;">Total</span>
+            <span style="color:#111;font-size:18px;">€${total.toFixed(2)}</span>
+          </div>` : `
+          <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:800;padding-top:10px;border-top:3px solid ${accent};">
+            <span style="color:#111;">Amount Due</span>
+            <span style="color:${balanceDue>0.01?'#e53e3e':'#16a34a'};font-size:18px;">${balanceDue>0.01?'€'+balanceDue.toFixed(2):'✓ Paid'}</span>
+          </div>`}
         </div>
       </div>
 
       ${biz.iban||biz.bic?`
-      <!-- PAYMENT DETAILS -->
       <div style="padding:0 20px 16px;">
         <div style="border-top:1px solid #eee;padding-top:12px;">
           <div style="font-size:11px;font-weight:800;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Payment Method</div>
@@ -1439,7 +1484,6 @@ function renderInvoicePreview(j, invNo, invDate){
         </div>
       </div>`:''}
 
-      <!-- FOOTER -->
       <div style="background:#f9f9f9;padding:14px 20px;text-align:center;border-top:1px solid #eee;">
         <div style="font-size:12px;color:#999;line-height:1.6;">
           ${biz.terms||'Payment due on receipt'}
@@ -1448,128 +1492,10 @@ function renderInvoicePreview(j, invNo, invDate){
         </div>
       </div>
 
-      <!-- BOTTOM COLOUR BAR -->
       <div style="background:${accent};height:6px;width:100%;"></div>
     </div>`;
 }
 
-
-// ---- SETTINGS ----
-function selectColour(hex, el){
-  document.querySelectorAll('#colour-picker div').forEach(d=>d.style.border='3px solid transparent');
-  el.style.border='3px solid white';
-  settings.accentColour=hex;
-}
-
-function loadSettings(){
-  document.getElementById('s-bizname').value=settings.bizname||'';
-  // Highlight saved colour
-  if(settings.accentColour){
-    const pickers=document.querySelectorAll('#colour-picker div');
-    pickers.forEach(d=>{
-      if(d.style.background===settings.accentColour||d.style.background===hexToRgb(settings.accentColour)){
-        d.style.border='3px solid white';
-      }
-    });
-  }
-  document.getElementById('s-name').value=settings.name||'';
-  document.getElementById('s-phone').value=settings.phone||'';
-  document.getElementById('s-email').value=settings.email||'';
-  document.getElementById('s-address').value=settings.address||'';
-  document.getElementById('s-vat').value=settings.vat||'';
-  document.getElementById('s-vat-registered').checked=!!settings.vatRegistered;
-  updateVatRegisteredUI();
-  document.getElementById('s-title').value=settings.title||'';
-  document.getElementById('s-iban').value=settings.iban||'';
-  document.getElementById('s-bic').value=settings.bic||'';
-  document.getElementById('s-rate').value=settings.rate||'';
-  document.getElementById('s-terms').value=settings.terms||'Payment due on receipt';
-  document.getElementById('s-footer').value=settings.footer||'';
-}
-
-function saveSettings(){
-  settings={
-    accentColour:settings.accentColour||'#F5C518',
-    bizname:document.getElementById('s-bizname').value.trim(),
-    name:document.getElementById('s-name').value.trim(),
-    phone:document.getElementById('s-phone').value.trim(),
-    email:document.getElementById('s-email').value.trim(),
-    address:document.getElementById('s-address').value.trim(),
-    vat:document.getElementById('s-vat').value.trim(),
-    vatRegistered:document.getElementById('s-vat-registered').checked,
-    title:document.getElementById('s-title').value.trim(),
-    iban:document.getElementById('s-iban').value.trim(),
-    bic:document.getElementById('s-bic').value.trim(),
-    rate:document.getElementById('s-rate').value||0,
-    terms:document.getElementById('s-terms').value,
-    footer:document.getElementById('s-footer').value.trim()
-  };
-  saveSets();
-  updateVatRegisteredUI();
-  // Show in-app toast confirmation instead of alert (alert blocked on some mobile browsers)
-  let toast=document.getElementById('settings-toast');
-  if(!toast){
-    toast=document.createElement('div');
-    toast.id='settings-toast';
-    toast.style.cssText='position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#22c55e;color:white;padding:12px 24px;border-radius:50px;font-weight:700;font-size:15px;z-index:9999;white-space:nowrap;box-shadow:0 4px 20px rgba(34,197,94,0.5);transition:opacity 0.4s;';
-    document.body.appendChild(toast);
-  }
-  toast.textContent='✓ Settings Saved!';
-  toast.style.opacity='1';
-  toast.style.display='block';
-  setTimeout(()=>{toast.style.opacity='0';setTimeout(()=>{toast.style.display='none';},400);},2500);
-}
-
-// ---- MODALS ----
-function populateSel(selId,selectedId){
-  const sel=document.getElementById(selId);
-  sel.innerHTML=jobs.length===0
-    ?'<option value="">No jobs yet</option>'
-    :jobs.map(j=>`<option value="${j.id}"${j.id===selectedId?' selected':''}>${j.name}</option>`).join('');
-}
-
-function openAddTime(jobId){
-  populateSel('at-job',jobId||currentJobId);
-  document.getElementById('at-hours').value='';
-  document.getElementById('modal-time').classList.add('open');
-}
-
-function openAddMaterials(jobId){
-  populateSel('am-job',jobId||currentJobId);
-  document.getElementById('am-amount').value='';
-  document.getElementById('am-note').value='';
-  document.getElementById('modal-mats').classList.add('open');
-}
-
-function closeModal(id){document.getElementById(id).classList.remove('open');}
-
-function addTime(){
-  const jobId=document.getElementById('at-job').value;
-  const hours=parseFloat(document.getElementById('at-hours').value);
-  if(!jobId||!hours||isNaN(hours)){alert('Please select a job and enter hours.');return;}
-  const idx=jobs.findIndex(x=>x.id===jobId);if(idx===-1) return;
-  jobs[idx].hours=(parseFloat(jobs[idx].hours)||0)+hours;
-  save();closeModal('modal-time');
-  if(currentJobId===jobId) renderJobDetail(jobId);
-  if(document.getElementById('screen-dashboard').classList.contains('active')) renderDash();
-}
-
-function addMaterials(){
-  const jobId=document.getElementById('am-job').value;
-  const amount=parseFloat(document.getElementById('am-amount').value);
-  if(!jobId||!amount||isNaN(amount)){alert('Please select a job and enter an amount.');return;}
-  const idx=jobs.findIndex(x=>x.id===jobId);if(idx===-1) return;
-  jobs[idx].mats=(parseFloat(jobs[idx].mats)||0)+amount;
-  save();closeModal('modal-mats');
-  if(currentJobId===jobId) renderJobDetail(jobId);
-  if(document.getElementById('screen-dashboard').classList.contains('active')) renderDash();
-}
-
-document.querySelectorAll('.modal-overlay').forEach(o=>{
-  o.addEventListener('click',e=>{if(e.target===o) o.classList.remove('open');});
-});
-
-// ---- SHARE INVOICE ----
 function shareInvoice(){
   const preview = document.getElementById('invoice-preview');
   if(!preview) return;
@@ -1735,6 +1661,75 @@ function saveSettingsToast(){
   };
   saveSets();
   showToast('✓ Settings Saved!','#22c55e');
+}
+
+
+function closeModal(id){
+  const m=document.getElementById(id);
+  if(m) m.classList.remove('open');
+}
+
+function openAddTime(jobId){
+  const sel=document.getElementById('at-job');
+  if(!sel) return;
+  sel.innerHTML = jobs.map(j=>`<option value="${j.id}">${j.name}</option>`).join('');
+  if(jobs.length===0){
+    showToast('Add a job first','#F5C518');
+    return;
+  }
+  sel.value = jobId || currentJobId || jobs[jobs.length-1].id;
+  document.getElementById('at-hours').value='';
+  document.getElementById('modal-time').classList.add('open');
+}
+
+function addTime(){
+  const jobId=document.getElementById('at-job').value;
+  const hours=parseFloat(document.getElementById('at-hours').value||0);
+  if(!jobId){ showToast('Select a job first','#F5C518'); return; }
+  if(!(hours>0)){ showToast('Enter hours greater than 0','#F5C518'); return; }
+  const j=jobs.find(x=>x.id===jobId);
+  if(!j){ showToast('Job not found','#ef4444'); return; }
+  j.hours=(parseFloat(j.hours)||0)+hours;
+  save();
+  closeModal('modal-time');
+  renderDash();
+  renderJobsList();
+  if(currentJobId===jobId) openDetail(jobId);
+  showToast('✓ Time added','#22c55e');
+}
+
+function openAddMaterials(jobId){
+  const sel=document.getElementById('am-job');
+  if(!sel) return;
+  sel.innerHTML = jobs.map(j=>`<option value="${j.id}">${j.name}</option>`).join('');
+  if(jobs.length===0){
+    showToast('Add a job first','#F5C518');
+    return;
+  }
+  sel.value = jobId || currentJobId || jobs[jobs.length-1].id;
+  document.getElementById('am-amount').value='';
+  document.getElementById('am-note').value='';
+  document.getElementById('modal-mats').classList.add('open');
+}
+
+function addMaterials(){
+  const jobId=document.getElementById('am-job').value;
+  const amount=parseFloat(document.getElementById('am-amount').value||0);
+  const note=(document.getElementById('am-note').value||'').trim();
+  if(!jobId){ showToast('Select a job first','#F5C518'); return; }
+  if(!(amount>0)){ showToast('Enter materials amount greater than 0','#F5C518'); return; }
+  const j=jobs.find(x=>x.id===jobId);
+  if(!j){ showToast('Job not found','#ef4444'); return; }
+  j.mats=(parseFloat(j.mats)||0)+amount;
+  if(note){
+    j.notes = j.notes ? (j.notes + '\nMaterials: ' + note) : ('Materials: ' + note);
+  }
+  save();
+  closeModal('modal-mats');
+  renderDash();
+  renderJobsList();
+  if(currentJobId===jobId) openDetail(jobId);
+  showToast('✓ Materials added','#22c55e');
 }
 
 // First launch warning
