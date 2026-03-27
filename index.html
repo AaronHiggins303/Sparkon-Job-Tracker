@@ -243,8 +243,8 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
   <div class="content">
     <div class="form-card">
       <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;"><span style="font-size:22px;">➕</span><div><div style="font-weight:700;color:var(--text);margin-bottom:4px;">Sample Job (Tap to Edit or Delete)</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">Tap New Job. Enter agreed price, hours, hourly rate, materials, VAT (if applicable), and your personal tax rate. Tap Save.</div></div></div>
-      <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;"><span style="font-size:22px;">💰</span><div><div style="font-weight:700;color:var(--text);margin-bottom:4px;">Gross Profit</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">Money received minus materials and VAT (if applied).</div></div></div>
-      <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;"><span style="font-size:22px;">🧾</span><div><div style="font-weight:700;color:var(--text);margin-bottom:4px;">Take Home</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">Gross profit minus your personal tax. This is what you actually keep.</div></div></div>
+      <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;"><span style="font-size:22px;">💰</span><div><div style="font-weight:700;color:var(--text);margin-bottom:4px;">Gross Profit So Far</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">Money received minus materials and VAT (if applied).</div></div></div>
+      <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;"><span style="font-size:22px;">🧾</span><div><div style="font-weight:700;color:var(--text);margin-bottom:4px;">Take Home So Far</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">Gross profit minus your personal tax. This is what you actually keep.</div></div></div>
       <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;"><span style="font-size:22px;">⏱</span><div><div style="font-weight:700;color:var(--text);margin-bottom:4px;">Time Undervalued Warning</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">If your take home is less than your time value (hours × rate), the job was underpriced. Use this as a guide for future quotes.</div></div></div>
       <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;"><span style="font-size:22px;">🟢🟡🔴</span><div><div style="font-weight:700;color:var(--text);margin-bottom:4px;">Service Intervals</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">Set inspection reminders. Orange = due soon. Red = overdue.</div></div></div>
       <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;"><span style="font-size:22px;">🧾</span><div><div style="font-weight:700;color:var(--text);margin-bottom:4px;">Create Invoice</div><div style="font-size:13px;color:var(--text2);line-height:1.5;">Open a job and tap Create Invoice. If VAT Registered is ON, VAT appears automatically. If OFF, no VAT is shown.</div></div></div>
@@ -371,7 +371,8 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
       <div class="field"><label>Notes</label><textarea id="nj-notes" placeholder="Any notes about this job..."></textarea></div>
     </div>
     <div class="form-card" id="nj-calc" style="display:none">
-      <div class="form-title">Live Calculation</div>
+      <div class="form-title">Job Performance (So Far)</div>
+        <div style="font-size:12px;opacity:0.7;margin-bottom:8px;">Based on money received so far</div>
       <div class="calc-grid" id="nj-calc-grid"></div>
     </div>
     <div class="form-card" id="nj-quote-card" style="display:none">
@@ -691,12 +692,12 @@ function renderCalc(c,gridId){
     <div class="calc-item"><div class="calc-label">Materials</div><div class="calc-value">${euro(c.materials)}</div></div>
     <div class="calc-item"><div class="calc-label">VAT Deducted</div><div class="calc-value">${c.vatAmount>0?'-':''}${euro(c.vatAmount)}</div></div>
     <div class="calc-item ${c.grossProfit<0?'loss-card':'profit-card'}">
-      <div class="calc-label">Gross Profit</div>
+      <div class="calc-label">Gross Profit So Far</div>
       <div class="calc-value">${c.grossProfit<0?'-':''}${euro(c.grossProfit)}</div>
     </div>
-    <div class="calc-item"><div class="calc-label">Personal Tax</div><div class="calc-value">${c.personalTax>0?'-':''}${euro(c.personalTax)}</div></div>
+    <div class="calc-item"><div class="calc-label">Personal Tax (So Far)</div><div class="calc-value">${c.personalTax>0?'-':''}${euro(c.personalTax)}</div></div>
     <div class="calc-item ${c.takeHome<0?'loss-card':'profit-card'}">
-      <div class="calc-label">Take Home</div>
+      <div class="calc-label">Take Home So Far</div>
       <div class="calc-value">${c.takeHome<0?'-':''}${euro(c.takeHome)}</div>
     </div>
     <div class="calc-item ${isUnderpriced?'loss-card':'profit-card'}">
@@ -957,7 +958,7 @@ function jobCardHTML(j){
       <span class="status-badge badge-${sk}">${j.status}</span>
     </div>
     <div class="job-card-bottom">
-      <div class="job-meta"><div class="jm-label">Gross Profit</div><div class="jm-value ${c.grossProfit>=0?'profit':'loss'}">${profitStr}</div></div>
+      <div class="job-meta"><div class="jm-label">Gross Profit So Far</div><div class="jm-value ${c.grossProfit>=0?'profit':'loss'}">${profitStr}</div></div>
       <div class="job-meta"><div class="jm-label">Owed</div><div class="jm-value ${c.remaining>0?'owed':'profit'}">${owedStr}</div></div>
       <div class="job-meta"><div class="jm-label">Hours</div><div class="jm-value">${parseFloat(j.hours)||0}h</div></div>
     </div>
@@ -1052,12 +1053,12 @@ function renderJobDetail(id){
           <div class="calc-item"><div class="calc-label">Received</div><div class="calc-value">€${parseFloat(j.received||0).toFixed(2)}</div></div>
           <div class="calc-item"><div class="calc-label">VAT Deducted</div><div class="calc-value">${c.vatAmount>0?'-':''}€${Math.abs(c.vatAmount).toFixed(2)}</div></div>
           <div class="calc-item ${c.grossProfit<0?'loss-card':'profit-card'}">
-            <div class="calc-label">Gross Profit</div>
+            <div class="calc-label">Gross Profit So Far</div>
             <div class="calc-value">${c.grossProfit<0?'-':''}€${Math.abs(c.grossProfit).toFixed(2)}</div>
           </div>
-          <div class="calc-item"><div class="calc-label">Personal Tax</div><div class="calc-value">${c.personalTax>0?'-':''}€${Math.abs(c.personalTax).toFixed(2)}</div></div>
+          <div class="calc-item"><div class="calc-label">Personal Tax (So Far)</div><div class="calc-value">${c.personalTax>0?'-':''}€${Math.abs(c.personalTax).toFixed(2)}</div></div>
           <div class="calc-item ${c.takeHome<0?'loss-card':'profit-card'}">
-            <div class="calc-label">Take Home</div>
+            <div class="calc-label">Take Home So Far</div>
             <div class="calc-value">${c.takeHome<0?'-':''}€${Math.abs(c.takeHome).toFixed(2)}</div>
           </div>
           <div class="calc-item ${c.timeResult<0?'loss-card':'profit-card'}">
@@ -1233,9 +1234,10 @@ function openInvoice(id){
       </label>
     </div>
     <div class="form-card" style="margin-bottom:12px">
-      <div class="form-title">Line Items</div>
+      <div class="form-title">Job & Extras</div>
       <div id="line-items-list"></div>
-      <button onclick="addLineItem()" style="width:100%;padding:12px;border-radius:var(--radius-sm);border:1.5px dashed var(--border2);background:transparent;color:var(--yellow);font-size:14px;font-weight:700;font-family:'Barlow',sans-serif;cursor:pointer;margin-top:8px;">+ Add Line Item</button>
+      <div style="font-size:12px;color:var(--text2);margin:2px 0 10px;">Extras will be added to invoice.</div>
+      <button onclick="addLineItem()" style="width:100%;padding:12px;border-radius:var(--radius-sm);border:1.5px dashed var(--border2);background:transparent;color:var(--yellow);font-size:14px;font-weight:700;font-family:'Barlow',sans-serif;cursor:pointer;margin-top:8px;">+ Add Extra</button>
     </div>
     <div id="invoice-preview"></div>
     <div style="background:var(--yellow-dim);border:1px solid rgba(245,197,24,0.3);border-radius:var(--radius);padding:16px;margin-bottom:10px;">
@@ -1528,6 +1530,31 @@ function showPrintInstructions(){
 }
 
 // ---- EXPORT / IMPORT ----
+
+function copyBackupToClipboard(){
+  const el=document.getElementById('backup-text');
+  if(!el){ showToast('Backup text not found','#ef4444'); return; }
+  el.removeAttribute('readonly');
+  el.focus();
+  el.select();
+  el.setSelectionRange(0, 999999);
+  try{
+    const ok=document.execCommand('copy');
+    if(ok){
+      showToast('✓ Copied','#22c55e');
+    } else {
+      showToast('Select and copy manually','#F5C518');
+    }
+  } catch(e){
+    showToast('Select and copy manually','#F5C518');
+  }
+  el.setAttribute('readonly','readonly');
+}
+
+function fallbackCopyBackup(){
+  copyBackupToClipboard();
+}
+
 function exportData(){
   const data={jobs,settings,exportedAt:new Date().toISOString(),version:'sparkon-v4'};
   const json=JSON.stringify(data,null,2);
@@ -1563,7 +1590,7 @@ function exportData(){
           </div>
         </div>
       </div>
-      <button onclick="navigator.clipboard.writeText(document.getElementById('backup-text').value).then(()=>showToast('✓ Copied to clipboard!','#22c55e')).catch(()=>showToast('Long press the text box and tap Copy','#F5C518'))" 
+      <button onclick="copyBackupToClipboard()" 
         style="width:100%;padding:16px;border-radius:16px;border:none;background:#F5C518;color:#000;font-size:16px;font-weight:800;font-family:'Barlow',sans-serif;cursor:pointer;margin-bottom:12px;">
         📋 Copy Backup to Clipboard
       </button>
@@ -1603,19 +1630,29 @@ function importData(){
 
 function restoreFromText(){
   try{
-    const text=document.getElementById('restore-text').value.trim();
-    if(!text){showToast('Please paste your backup text first','#F5C518');return;}
-    const data=JSON.parse(text);
-    if(!data.jobs||!data.version) throw new Error('Invalid');
-    // No confirm() - just restore directly and show toast
+    const area=document.getElementById('restore-text');
+    const text=(area?.value||'').trim();
+    if(!text){
+      showToast('Paste backup first','#F5C518');
+      return;
+    }
+    const cleaned=text.replace(/^\uFEFF/, '');
+    const data=JSON.parse(cleaned);
+    if(!data || !Array.isArray(data.jobs)){
+      throw new Error('Invalid backup');
+    }
     jobs=data.jobs;
-    if(data.settings) settings=data.settings;
-    save();saveSets();
+    if(data.settings && typeof data.settings==='object') settings=data.settings;
+    save();
+    saveSets();
+    renderDash();
+    renderJobsList();
+    try{ renderSettings(); }catch(err){}
     closeOverlay();
-    showToast('✓ '+jobs.length+' jobs restored!','#22c55e');
-    showScreen('dashboard',false);
+    showScreen('dashboard', false);
+    showToast('✓ Restore complete','#22c55e');
   } catch(err){
-    showToast('❌ Invalid backup — check you copied the full text','#ef4444');
+    showToast('❌ Invalid backup','#ef4444');
   }
 }
 
@@ -1640,6 +1677,38 @@ function hexToRgb(hex){
   const g=parseInt(hex.slice(3,5),16);
   const b=parseInt(hex.slice(5,7),16);
   return 'rgb('+r+', '+g+', '+b+')';
+}
+
+
+function selectColour(hex, el){
+  document.querySelectorAll('#colour-picker div').forEach(d=>d.style.border='3px solid transparent');
+  if(el) el.style.border='3px solid white';
+  settings.accentColour=hex;
+}
+
+function loadSettings(){
+  document.getElementById('s-bizname').value=settings.bizname||'';
+  if(settings.accentColour){
+    const pickers=document.querySelectorAll('#colour-picker div');
+    pickers.forEach(d=>{
+      if(d.style.background===settings.accentColour||d.style.background===hexToRgb(settings.accentColour)){
+        d.style.border='3px solid white';
+      }
+    });
+  }
+  document.getElementById('s-name').value=settings.name||'';
+  document.getElementById('s-phone').value=settings.phone||'';
+  document.getElementById('s-email').value=settings.email||'';
+  document.getElementById('s-address').value=settings.address||'';
+  document.getElementById('s-vat').value=settings.vat||'';
+  document.getElementById('s-vat-registered').checked=!!settings.vatRegistered;
+  updateVatRegisteredUI();
+  document.getElementById('s-title').value=settings.title||'';
+  document.getElementById('s-iban').value=settings.iban||'';
+  document.getElementById('s-bic').value=settings.bic||'';
+  document.getElementById('s-rate').value=settings.rate||'';
+  document.getElementById('s-terms').value=settings.terms||'Payment due on receipt';
+  document.getElementById('s-footer').value=settings.footer||'';
 }
 
 function saveSettingsToast(){
@@ -1694,7 +1763,7 @@ function addTime(){
   closeModal('modal-time');
   renderDash();
   renderJobsList();
-  if(currentJobId===jobId) openDetail(jobId);
+  try{ openDetail(jobId); }catch(err){}
   showToast('✓ Time added','#22c55e');
 }
 
@@ -1728,7 +1797,7 @@ function addMaterials(){
   closeModal('modal-mats');
   renderDash();
   renderJobsList();
-  if(currentJobId===jobId) openDetail(jobId);
+  try{ openDetail(jobId); }catch(err){}
   showToast('✓ Materials added','#22c55e');
 }
 
