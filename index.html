@@ -211,6 +211,13 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
 /* PRINT HINT BOX */
 .print-hint{background:var(--yellow-dim);border:1px solid rgba(245,197,24,0.2);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:10px;font-size:13px;color:var(--text2);line-height:1.5;text-align:center;}
 .print-hint strong{color:var(--yellow);display:block;font-size:14px;margin-bottom:3px;}
+
+@media print {
+  body {
+    zoom: 1.15;
+  }
+}
+
 </style>
 </head>
 <body>
