@@ -1873,27 +1873,58 @@ checkFirstLaunch();
 function tryPrint(){
   const preview=document.getElementById('invoice-preview');
   if(!preview){showToast('Please open an invoice first','#F5C518');return;}
+
   const existing=document.getElementById('print-style');
   if(existing) existing.remove();
+
   const style=document.createElement('style');
   style.id='print-style';
   style.innerHTML=`
+    @page { size: A4; margin: 8mm; }
     @media print {
-      html, body { margin:0!important; padding:0!important; background:white!important; }
+      html, body {
+        margin:0!important;
+        padding:0!important;
+        background:white!important;
+        width:auto!important;
+        height:auto!important;
+        -webkit-print-color-adjust: exact!important;
+        print-color-adjust: exact!important;
+      }
       body > *:not(#invoice-print-wrapper) { display:none!important; }
-      #invoice-print-wrapper { display:block!important; padding:20px!important; }
+      #invoice-print-wrapper {
+        display:block!important;
+        position:static!important;
+        width:auto!important;
+        background:white!important;
+        padding:0!important;
+        margin:0!important;
+      }
+      #invoice-print-wrapper .invoice-sheet {
+        width:194mm!important;
+        margin:0 auto!important;
+      }
+      #invoice-print-wrapper .invoice-sheet > div {
+        width:100%!important;
+        margin:0!important;
+        border-radius:0!important;
+        box-shadow:none!important;
+      }
     }
   `;
   document.head.appendChild(style);
+
   let wrapper = document.getElementById('invoice-print-wrapper');
   if(!wrapper){
     wrapper = document.createElement('div');
     wrapper.id = 'invoice-print-wrapper';
-    wrapper.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;background:white;z-index:99999;';
+    wrapper.style.cssText = 'display:none;background:white;';
     document.body.appendChild(wrapper);
   }
-  wrapper.innerHTML = preview.innerHTML;
+
+  wrapper.innerHTML = `<div class="invoice-sheet">${preview.innerHTML}</div>`;
   wrapper.style.display = 'block';
+
   setTimeout(()=>{
     window.print();
     setTimeout(()=>{
@@ -1901,8 +1932,8 @@ function tryPrint(){
       wrapper.innerHTML='';
       const s=document.getElementById('print-style');
       if(s) s.remove();
-    },2000);
-  },300);
+    },1500);
+  },250);
 }
 
 function takeScreenshot(){
