@@ -1880,54 +1880,58 @@ function tryPrint(){
     style.id='print-style';
     style.innerHTML=`
       @page { size: A4; margin: 12mm; }
-      #invoice-print-wrapper { display:none; }
       @media print {
         html, body { margin:0!important; padding:0!important; background:white!important; }
-        body > *:not(#invoice-print-wrapper):not(#main-toast) { display:none!important; }
-        #invoice-print-wrapper {
+        body.printing-invoice > *:not(#invoice-screen):not(#main-toast) { display:none!important; }
+        body.printing-invoice #invoice-screen {
           display:block!important;
           position:static!important;
+          inset:auto!important;
           width:auto!important;
-          max-width:none!important;
-          margin:0!important;
-          padding:0!important;
+          height:auto!important;
+          overflow:visible!important;
           background:white!important;
           z-index:auto!important;
+          padding:0!important;
         }
-        #invoice-print-wrapper .invoice-print-shell {
+        body.printing-invoice #invoice-screen > div {
+          max-width:none!important;
           width:186mm!important;
-          min-height:auto!important;
           margin:0 auto!important;
+          padding:0!important;
           background:white!important;
+          box-shadow:none!important;
+          border:none!important;
+        }
+        body.printing-invoice #invoice-screen button,
+        body.printing-invoice #invoice-screen .btn,
+        body.printing-invoice #invoice-screen [onclick*="tryPrint"],
+        body.printing-invoice #invoice-screen [onclick*="takeScreenshot"],
+        body.printing-invoice #invoice-screen [onclick*="closeOverlay"] {
+          display:none!important;
         }
       }
     `;
     document.head.appendChild(style);
   }
 
-  let wrapper=document.getElementById('invoice-print-wrapper');
-  if(!wrapper){
-    wrapper=document.createElement('div');
-    wrapper.id='invoice-print-wrapper';
-    wrapper.style.cssText='display:none;position:absolute;left:-99999px;top:0;width:210mm;background:white;z-index:-1;';
-    document.body.appendChild(wrapper);
-  }
-
-  wrapper.innerHTML = `<div class="invoice-print-shell">${preview.innerHTML}</div>`;
-
   const cleanup=()=>{
-    wrapper.innerHTML='';
-    wrapper.style.display='none';
+    document.body.classList.remove('printing-invoice');
     window.removeEventListener('afterprint', cleanup);
   };
 
-  wrapper.style.display='block';
+  document.body.classList.add('printing-invoice');
   window.addEventListener('afterprint', cleanup, { once:true });
 
   setTimeout(()=>{
-    try{ window.print(); }catch(e){ cleanup(); showToast('Print not available on this device','#F5C518'); }
-    setTimeout(cleanup, 1500);
-  },150);
+    try {
+      window.print();
+    } catch(e) {
+      cleanup();
+      showToast('Use Safari Share then Print or Save as PDF','#F5C518');
+    }
+    setTimeout(cleanup, 2000);
+  }, 150);
 }
 
 function takeScreenshot(){
