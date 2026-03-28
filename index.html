@@ -1874,70 +1874,72 @@ function tryPrint(){
   const preview=document.getElementById('invoice-preview');
   if(!preview){showToast('Please open an invoice first','#F5C518');return;}
 
-  const printWindow = window.open('', '_blank', 'width=900,height=1200');
-  if(!printWindow){
-    showToast('Allow pop-ups to print the invoice','#F5C518');
-    return;
+  const oldStyle=document.getElementById('print-style');
+  if(oldStyle) oldStyle.remove();
+
+  const style=document.createElement('style');
+  style.id='print-style';
+  style.innerHTML=`
+    @page {
+      size: A4 portrait;
+      margin: 12mm;
+    }
+    @media print {
+      html, body {
+        margin:0!important;
+        padding:0!important;
+        background:white!important;
+        -webkit-print-color-adjust:exact!important;
+        print-color-adjust:exact!important;
+      }
+      body > *:not(#invoice-print-wrapper) {
+        display:none!important;
+      }
+      #invoice-print-wrapper {
+        display:block!important;
+        position:static!important;
+        width:auto!important;
+        min-height:auto!important;
+        margin:0!important;
+        padding:0!important;
+        background:white!important;
+      }
+      #invoice-print-wrapper > .print-shell {
+        width:100%!important;
+        max-width:none!important;
+        margin:0 auto!important;
+      }
+      #invoice-print-wrapper .print-hint,
+      #invoice-print-wrapper .no-print,
+      #invoice-print-wrapper button {
+        display:none!important;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+
+  let wrapper = document.getElementById('invoice-print-wrapper');
+  if(!wrapper){
+    wrapper = document.createElement('div');
+    wrapper.id = 'invoice-print-wrapper';
+    wrapper.style.cssText = 'display:none;position:fixed;inset:0;background:white;z-index:99999;overflow:auto;padding:12mm;box-sizing:border-box;';
+    document.body.appendChild(wrapper);
   }
 
-  const invoiceHtml = preview.innerHTML;
-  printWindow.document.open();
-  printWindow.document.write(`
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Invoice Print</title>
-      <style>
-        @page {
-          size: A4;
-          margin: 10mm;
-        }
-        html, body {
-          margin: 0;
-          padding: 0;
-          background: #ffffff;
-          -webkit-print-color-adjust: exact;
-          print-color-adjust: exact;
-        }
-        body {
-          font-family: Arial, sans-serif;
-        }
-        .print-page {
-          width: 190mm;
-          margin: 0 auto;
-          padding-top: 6mm;
-          box-sizing: border-box;
-        }
-        .print-page > div {
-          margin: 0 !important;
-          box-shadow: none !important;
-          border-radius: 0 !important;
-        }
-        @media screen {
-          body {
-            background: #f3f4f6;
-            padding: 16px 0;
-          }
-          .print-page {
-            background: #ffffff;
-          }
-        }
-      </style>
-    </head>
-    <body>
-      <div class="print-page">${invoiceHtml}</div>
-    </body>
-    </html>
-  `);
-  printWindow.document.close();
+  wrapper.innerHTML = `<div class="print-shell">${preview.innerHTML}</div>`;
+  wrapper.style.display = 'block';
 
-  setTimeout(()=>{
-    printWindow.focus();
-    printWindow.print();
-    setTimeout(()=>{ try{ printWindow.close(); }catch(e){} }, 500);
-  }, 400);
+  requestAnimationFrame(()=>{
+    setTimeout(()=>{
+      window.print();
+      setTimeout(()=>{
+        wrapper.style.display='none';
+        wrapper.innerHTML='';
+        const s=document.getElementById('print-style');
+        if(s) s.remove();
+      },1200);
+    },250);
+  });
 }
 
 function takeScreenshot(){
