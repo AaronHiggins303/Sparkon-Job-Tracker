@@ -1786,7 +1786,7 @@ function addTime(){
   closeModal('modal-time');
   renderDash();
   renderJobsList();
-  try{ openDetail(jobId); }catch(err){}
+  try{ openJob(jobId); }catch(err){}
   showToast('✓ Time added','#22c55e');
 }
 
@@ -1820,7 +1820,7 @@ function addMaterials(){
   closeModal('modal-mats');
   renderDash();
   renderJobsList();
-  try{ openDetail(jobId); }catch(err){}
+  try{ openJob(jobId); }catch(err){}
   showToast('✓ Materials added','#22c55e');
 }
 
