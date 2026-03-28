@@ -1873,65 +1873,36 @@ checkFirstLaunch();
 function tryPrint(){
   const preview=document.getElementById('invoice-preview');
   if(!preview){showToast('Please open an invoice first','#F5C518');return;}
-
-  let style=document.getElementById('print-style');
-  if(!style){
-    style=document.createElement('style');
-    style.id='print-style';
-    style.innerHTML=`
-      @page { size: A4; margin: 12mm; }
-      @media print {
-        html, body { margin:0!important; padding:0!important; background:white!important; }
-        body.printing-invoice > *:not(#invoice-screen):not(#main-toast) { display:none!important; }
-        body.printing-invoice #invoice-screen {
-          display:block!important;
-          position:static!important;
-          inset:auto!important;
-          width:auto!important;
-          height:auto!important;
-          overflow:visible!important;
-          background:white!important;
-          z-index:auto!important;
-          padding:0!important;
-        }
-        body.printing-invoice #invoice-screen > div {
-          max-width:none!important;
-          width:186mm!important;
-          margin:0 auto!important;
-          padding:0!important;
-          background:white!important;
-          box-shadow:none!important;
-          border:none!important;
-        }
-        body.printing-invoice #invoice-screen button,
-        body.printing-invoice #invoice-screen .btn,
-        body.printing-invoice #invoice-screen [onclick*="tryPrint"],
-        body.printing-invoice #invoice-screen [onclick*="takeScreenshot"],
-        body.printing-invoice #invoice-screen [onclick*="closeOverlay"] {
-          display:none!important;
-        }
-      }
-    `;
-    document.head.appendChild(style);
-  }
-
-  const cleanup=()=>{
-    document.body.classList.remove('printing-invoice');
-    window.removeEventListener('afterprint', cleanup);
-  };
-
-  document.body.classList.add('printing-invoice');
-  window.addEventListener('afterprint', cleanup, { once:true });
-
-  setTimeout(()=>{
-    try {
-      window.print();
-    } catch(e) {
-      cleanup();
-      showToast('Use Safari Share then Print or Save as PDF','#F5C518');
+  const existing=document.getElementById('print-style');
+  if(existing) existing.remove();
+  const style=document.createElement('style');
+  style.id='print-style';
+  style.innerHTML=`
+    @media print {
+      html, body { margin:0!important; padding:0!important; background:white!important; }
+      body > *:not(#invoice-print-wrapper) { display:none!important; }
+      #invoice-print-wrapper { display:block!important; padding:20px!important; }
     }
-    setTimeout(cleanup, 2000);
-  }, 150);
+  `;
+  document.head.appendChild(style);
+  let wrapper = document.getElementById('invoice-print-wrapper');
+  if(!wrapper){
+    wrapper = document.createElement('div');
+    wrapper.id = 'invoice-print-wrapper';
+    wrapper.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;background:white;z-index:99999;';
+    document.body.appendChild(wrapper);
+  }
+  wrapper.innerHTML = preview.innerHTML;
+  wrapper.style.display = 'block';
+  setTimeout(()=>{
+    window.print();
+    setTimeout(()=>{
+      wrapper.style.display='none';
+      wrapper.innerHTML='';
+      const s=document.getElementById('print-style');
+      if(s) s.remove();
+    },2000);
+  },300);
 }
 
 function takeScreenshot(){
