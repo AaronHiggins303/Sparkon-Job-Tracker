@@ -218,6 +218,13 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
   }
 }
 
+
+/* ANDROID LAYOUT SAFETY FIX */
+*, *::before, *::after{box-sizing:border-box;}
+html,body,.content,.screen{overflow-x:hidden;}
+img,svg,canvas,table{max-width:100%;}
+.job-card,.form-card,.hero-stat,.stat-card,.settings-row,.field-row,.job-card-top,.job-card-bottom{min-width:0;}
+
 </style>
 </head>
 <body>
@@ -528,7 +535,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
           <div onclick="selectColour('#ef4444',this)" style="height:36px;border-radius:8px;background:#ef4444;cursor:pointer;border:3px solid transparent;"></div>
           <div onclick="selectColour('#3b82f6',this)" style="height:36px;border-radius:8px;background:#3b82f6;cursor:pointer;border:3px solid transparent;"></div>
           <div onclick="selectColour('#22c55e',this)" style="height:36px;border-radius:8px;background:#22c55e;cursor:pointer;border:3px solid transparent;"></div>
-          <div onclick="selectColour('#111111',this)" style="height:36px;border-radius:8px;background:#111111;cursor:pointer;border:3px solid transparent;"></div>
+          <div onclick="selectColour('#f97316',this)" style="height:36px;border-radius:8px;background:#f97316;cursor:pointer;border:3px solid transparent;"></div>
         </div>
       </div>
       <div class="field"><label>Your Name</label><input type="text" id="s-name" placeholder="Your full name" autocomplete="off"></div>
@@ -1356,7 +1363,7 @@ function refreshInvoice(){
 
 function renderInvoicePreview(j, invNo, invDate){
   const biz=settings;
-  const accent=biz.accentColour||'#F5C518';
+  const accent=(biz.accentColour==='#111111' ? '#f97316' : (biz.accentColour||'#F5C518'));
   const dueDate=document.getElementById('inv-due-date')?document.getElementById('inv-due-date').value:'';
   const items=(window.invLineItems||[]).map(item=>({...item}));
   const paymentMode=window.invPaymentDisplay||'full';
@@ -1704,12 +1711,14 @@ function hexToRgb(hex){
 
 
 function selectColour(hex, el){
+  if(hex==='#111111') hex='#f97316';
   document.querySelectorAll('#colour-picker div').forEach(d=>d.style.border='3px solid transparent');
   if(el) el.style.border='3px solid white';
   settings.accentColour=hex;
 }
 
 function loadSettings(){
+  if(settings.accentColour==='#111111') settings.accentColour='#f97316';
   document.getElementById('s-bizname').value=settings.bizname||'';
   if(settings.accentColour){
     const pickers=document.querySelectorAll('#colour-picker div');
@@ -1735,6 +1744,7 @@ function loadSettings(){
 }
 
 function saveSettingsToast(){
+  if(settings.accentColour==='#111111') settings.accentColour='#f97316';
   settings={
     accentColour:settings.accentColour||'#F5C518',
     bizname:document.getElementById('s-bizname').value.trim(),
