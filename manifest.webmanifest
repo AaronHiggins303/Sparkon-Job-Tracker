@@ -1,6 +1,6 @@
 {
-  "name": "Sparkon Job Tracker",
-  "short_name": "Sparkon Jobs",
+  "name": "SparkOnJobs",
+  "short_name": "SparkOnJobs",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0a0a0f",
