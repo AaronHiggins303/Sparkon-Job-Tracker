@@ -2064,7 +2064,6 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 const overlay = document.getElementById('loginOverlay');
 
-document.body.style.visibility = 'visible';
 const { data: { session } } = await supabase.auth.getSession();
 
 if (!session) {
@@ -2081,12 +2080,13 @@ if (!session) {
   } else {
     overlay.style.display = 'flex';
   }
-}const status = document.getElementById('loginStatus');
+}
 
-document.getElementById('loginBtn').addEventListener('click', async () => {
+document.body.style.visibility = 'visible';
+const status = document.getElementById('loginStatus');
 
+// SIGNUP
 document.getElementById('signupBtn').addEventListener('click', async () => {
-
   const email = document.getElementById('loginEmail').value;
   const password = document.getElementById('loginPassword').value;
 
@@ -2102,6 +2102,9 @@ document.getElementById('signupBtn').addEventListener('click', async () => {
 
   status.textContent = 'Account created. You can now login.';
 });
+
+// LOGIN
+document.getElementById('loginBtn').addEventListener('click', async () => {
   const email = document.getElementById('loginEmail').value;
   const password = document.getElementById('loginPassword').value;
 
@@ -2122,7 +2125,7 @@ document.getElementById('signupBtn').addEventListener('click', async () => {
     .eq('id', data.user.id)
     .single();
 
-   if (!access || !access.paid) {
+  if (!access || !access.paid) {
     status.textContent = 'No active subscription';
     document.body.style.visibility = "visible";
     return;
