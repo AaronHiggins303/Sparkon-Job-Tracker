@@ -2118,9 +2118,8 @@ function setInstallInstructions() {
   if (!installInstructions) return;
 
   const ua = navigator.userAgent;
-  const isIphone = /iPhone/i.test(ua);
+  const isIphone = /iPhone|iPad|iPod/i.test(ua);
   const isAndroid = /Android/i.test(ua);
-  const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
   const isStandalone =
     window.matchMedia('(display-mode: standalone)').matches ||
     window.navigator.standalone === true;
@@ -2131,10 +2130,12 @@ function setInstallInstructions() {
   }
 
   if (isIphone) {
-    if (isSafari) {
+    const isRealSafari = /Safari/i.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS|GSA/i.test(ua);
+
+    if (isRealSafari) {
       installInstructions.innerHTML = 'iPhone: Tap Share, then Add to Home Screen.';
     } else {
-      installInstructions.innerHTML = 'iPhone: Tap Share, then Open in Safari. In Safari, tap Share again, then Add to Home Screen.';
+      installInstructions.innerHTML = 'iPhone: Open in Safari, then tap Share, then Add to Home Screen.';
     }
     return;
   }
