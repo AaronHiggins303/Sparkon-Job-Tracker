@@ -2213,6 +2213,13 @@ function maybeShowInstallPrompt() {
 }
 
 setInstallInstructions();
+const url = new URL(window.location.href);
+const code = url.searchParams.get('code');
+
+if (code) {
+  await supabase.auth.exchangeCodeForSession(code);
+  window.history.replaceState({}, document.title, window.location.pathname);
+}
 
 const { data: { session } } = await supabase.auth.getSession();
 
