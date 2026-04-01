@@ -2086,10 +2086,6 @@ if('serviceWorker' in navigator){
       Sign In
     </button>
 
-    <button id="signupBtn"
-      style="width:100%; margin-top:10px; padding:12px; border-radius:10px; background:#1e1e28; border:none; color:white;">
-      First Time? Create Account
-    </button>
 
     <button onclick="window.location.href='https://buy.stripe.com/bJe4gzdJv2jW6la8GL97G02'"
       style="width:100%; margin-top:14px; padding:14px; border-radius:10px; background:#00c853; border:none; color:white; font-weight:bold;">
@@ -2113,6 +2109,56 @@ const supabaseKey = 'sb_publishable_tEOgu4jSgVo12hwDLMjJiQ_aIgc-zqA';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const overlay = document.getElementById('loginOverlay');
+const installPrompt = document.getElementById('installPrompt');
+const installInstructions = document.getElementById('installInstructions');
+const closeInstallPrompt = document.getElementById('closeInstallPrompt');
+const status = document.getElementById('loginStatus');
+
+function setInstallInstructions() {
+  if (!installInstructions) return;
+
+  const ua = navigator.userAgent;
+  const isIphone = /iPhone/i.test(ua);
+  const isAndroid = /Android/i.test(ua);
+  const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+  const isStandalone =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true;
+
+  if (isStandalone) {
+    installPrompt.style.display = 'none';
+    return;
+  }
+
+  if (isIphone) {
+    if (isSafari) {
+      installInstructions.innerHTML = 'iPhone: Tap Share, then Add to Home Screen.';
+    } else {
+      installInstructions.innerHTML = 'iPhone: Tap Share, then Open in Safari. In Safari, tap Share again, then Add to Home Screen.';
+    }
+    return;
+  }
+
+  if (isAndroid) {
+    installInstructions.innerHTML = 'Android: Open in Chrome, tap menu, then Add to Home Screen.';
+    return;
+  }
+
+  installInstructions.innerHTML = 'Add this app to your home screen for the best experience.';
+}
+
+function maybeShowInstallPrompt() {
+  const isStandalone =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true;
+
+  if (isStandalone) return;
+  if (localStorage.getItem('installPromptDismissed')) return;
+
+  installPrompt.style.display = 'flex';
+}
+
+setInstallInstructions();
 
 const { data: { session } } = await supabase.auth.getSession();
 
@@ -2127,31 +2173,13 @@ if (!session) {
 
   if (access && access.paid) {
     overlay.style.display = 'none';
+    maybeShowInstallPrompt();
   } else {
     overlay.style.display = 'flex';
   }
 }
 
 document.body.style.visibility = 'visible';
-const status = document.getElementById('loginStatus');
-
-// SIGNUP
-document.getElementById('signupBtn').addEventListener('click', async () => {
-  const email = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPassword').value;
-
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password
-  });
-
-  if (error) {
-    status.textContent = 'Signup failed: ' + error.message;
-    return;
-  }
-
-  status.textContent = 'Account created. You can now login.';
-});
 
 // LOGIN
 document.getElementById('loginBtn').addEventListener('click', async () => {
@@ -2168,8 +2196,6 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
     return;
   }
 
-  // CHECK PAID ACCESS
-    // CHECK PAID ACCESS
   const { data: access } = await supabase
     .from('user_access')
     .select('paid')
@@ -2178,13 +2204,13 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
 
   if (!access || !access.paid) {
     status.textContent = 'No active subscription';
-    document.body.style.visibility = "visible";
+    document.body.style.visibility = 'visible';
     return;
   }
 
-  // SUCCESS → unlock app
   overlay.style.display = 'none';
-  document.body.style.visibility = "visible";
+  document.body.style.visibility = 'visible';
+  maybeShowInstallPrompt();
 });
 
 window.addEventListener('load', () => {
@@ -2205,6 +2231,30 @@ window.addEventListener('load', () => {
     });
   });
 });
+
+closeInstallPrompt.addEventListener('click', () => {
+  installPrompt.style.display = 'none';
+  localStorage.setItem('installPromptDismissed', 'true');
+});
 </script>
-</body>
+<div id="installPrompt" style="display:none; position:fixed; inset:0; background:rgba(10,10,15,0.96); color:white; z-index:10000; justify-content:center; align-items:center; text-align:center; padding:24px;">
+  <div style="max-width:340px;">
+    
+    <h2 style="margin-bottom:10px;">Add to Home Screen</h2>
+
+    <p style="opacity:.8;">
+      This app works best when added to your home screen.
+    </p>
+
+    <p id="installInstructions" style="font-size:13px; opacity:.75; margin-top:10px; line-height:1.5;">
+      Loading instructions...
+    </p>
+
+    <button id="closeInstallPrompt"
+      style="margin-top:16px; padding:12px 20px; border:none; border-radius:10px; background:#2b6cff; color:white;">
+      Continue
+    </button>
+
+  </div>
+</div></body>
 </html>
