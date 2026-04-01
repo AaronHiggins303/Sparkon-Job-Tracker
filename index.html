@@ -2216,14 +2216,13 @@ setInstallInstructions();
 
 const { data: { session } } = await supabase.auth.getSession();
 
-const urlHash = window.location.hash;
-
-if (urlHash.includes('type=recovery')) {
-  if (resetPrompt) {
-    resetPrompt.style.display = 'flex';
+supabase.auth.onAuthStateChange((event) => {
+  if (event === 'PASSWORD_RECOVERY') {
+    if (resetPrompt) {
+      resetPrompt.style.display = 'flex';
+    }
   }
-}
-if (!session) {
+}); if (!session) {
   overlay.style.display = 'flex';
   document.body.style.visibility = 'visible';
 } else {
@@ -2301,6 +2300,33 @@ if (closeInstallPrompt) {
   closeInstallPrompt.addEventListener('click', () => {
     installPrompt.style.display = 'none';
     localStorage.setItem('installPromptDismissed', 'true');
+  });
+}
+
+if (resetPasswordBtn) {
+  resetPasswordBtn.addEventListener('click', async () => {
+    const newPassword = resetPasswordInput.value;
+
+    if (!newPassword || newPassword.length < 6) {
+      resetStatus.textContent = 'Password must be at least 6 characters.';
+      return;
+    }
+
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword
+    });
+
+    if (error) {
+      resetStatus.textContent = 'Error: ' + error.message;
+      return;
+    }
+
+    resetStatus.textContent = 'Password updated successfully.';
+
+    setTimeout(() => {
+      resetPrompt.style.display = 'none';
+      window.location.href = window.location.pathname;
+    }, 1200);
   });
 }
 </script>
