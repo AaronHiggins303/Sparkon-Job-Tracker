@@ -2216,6 +2216,13 @@ setInstallInstructions();
 
 const { data: { session } } = await supabase.auth.getSession();
 
+const urlHash = window.location.hash;
+
+if (urlHash.includes('type=recovery')) {
+  if (resetPrompt) {
+    resetPrompt.style.display = 'flex';
+  }
+}
 if (!session) {
   overlay.style.display = 'flex';
   document.body.style.visibility = 'visible';
