@@ -2174,7 +2174,9 @@ if (!session) {
 
   if (access && access.paid) {
     overlay.style.display = 'none';
-    maybeShowInstallPrompt();
+    setTimeout(() => {
+  maybeShowInstallPrompt();
+}, 1500);
   } else {
     overlay.style.display = 'flex';
   }
