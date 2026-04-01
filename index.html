@@ -2212,15 +2212,31 @@ function maybeShowInstallPrompt() {
   installPrompt.style.display = 'flex';
 }
 
-setInstallInstructions();
 const url = new URL(window.location.href);
 const code = url.searchParams.get('code');
+const hash = window.location.hash;
 
 if (code) {
-  await supabase.auth.exchangeCodeForSession(code);
+  const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+  if (!error && resetPrompt) {
+    resetPrompt.style.display = 'flex';
+  }
+
   window.history.replaceState({}, document.title, window.location.pathname);
+} else if (hash.includes('type=recovery')) {
+  if (resetPrompt) {
+    resetPrompt.style.display = 'flex';
+  }
 }
 
+supabase.auth.onAuthStateChange((event) => {
+  if (event === 'PASSWORD_RECOVERY') {
+    if (resetPrompt) {
+      resetPrompt.style.display = 'flex';
+    }
+  }
+});
 const { data: { session } } = await supabase.auth.getSession();
 
 supabase.auth.onAuthStateChange((event) => {
