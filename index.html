@@ -28,6 +28,11 @@
   button {
     font-size: 16px;
   }
+#loginEmail:focus,
+#loginPassword:focus{
+  border:1px solid rgba(100,140,255,0.6) !important;
+  box-shadow:0 0 0 2px rgba(100,140,255,0.15);
+}
 
   @keyframes glow {
     from {
@@ -80,9 +85,9 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
 
 /* TOPBAR */
 .topbar{
-  background:rgba(18,18,24,0.92);
-  border-bottom:1px solid var(--border2);
-  padding:calc(var(--safe-top) + 12px) 18px 12px;
+  background:linear-gradient(180deg, rgba(20,20,28,0.96), rgba(16,16,22,0.92));
+  border-bottom:1px solid rgba(255,255,255,0.07);
+  padding:calc(var(--safe-top) + 14px) 18px 14px;
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -90,10 +95,10 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-
   position:sticky;
   top:0;
   z-index:100;
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  box-shadow:0 8px 20px rgba(0,0,0,0.18);
 }
-
 .topbar-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--text);flex:1;}
 .topbar-back{background:var(--card);border:1px solid var(--border);color:var(--text2);width:36px;height:36px;border-radius:10px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .topbar-action{background:var(--yellow);color:#000;padding:0 16px;height:36px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif;border:none;white-space:nowrap;}
@@ -2127,7 +2132,7 @@ if('serviceWorker' in navigator){
 <!-- SUPABASE LOGIN OVERLAY -->
 <div id="loginOverlay" style="display:flex; position:fixed; top:0; left:0; width:100%; height:100%; background:#0a0a0f; justify-content:center; align-items:center; z-index:9999;">
 
-  <div style="background:#121218; padding:30px; border-radius:16px; width:90%; max-width:360px; text-align:center; box-shadow:0 0 30px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.05);">
+  <div style="width:90%; max-width:360px; text-align:center; padding:24px 18px; border-radius:18px; background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)); border:1px solid rgba(255,255,255,0.08); box-shadow:0 12px 30px rgba(0,0,0,0.25);">
 
    <img src="icon-192.png" style="
   width:90px;
@@ -2137,29 +2142,56 @@ if('serviceWorker' in navigator){
 ">
 <h2 style="margin-bottom:10px;">Sparkon Job Tracker</h2>
 
-    <p style="margin-bottom:20px; opacity:.7;">Track jobs, quotes, payments & invoices — all in one app</p>
+   <p style="margin:6px 0 22px; opacity:.7; font-size:14px; line-height:1.4;">
+  Track jobs, quotes, payments & invoices — all in one app
+</p>
 
     <input id="loginEmail" type="email" placeholder="Email"
-      style="width:100%; margin:6px 0; padding:12px; border-radius:8px; border:none; background:#1a1a22; color:white; box-sizing:border-box;">
+  onfocus="this.style.border='1px solid rgba(100,140,255,0.9)'; this.style.boxShadow='0 0 0 3px rgba(100,140,255,0.25)';"
+  onblur="this.style.border='1px solid rgba(255,255,255,0.08)'; this.style.boxShadow='none';"
+  style="width:100%; margin:6px 0; padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.04); color:white; box-sizing:border-box; font-size:16px; outline:none;">
 
-    <input id="loginPassword" type="password" placeholder="Password"
-      style="width:100%; margin:6px 0; padding:12px; border-radius:8px; border:none; background:#1a1a22; color:white; box-sizing:border-box;">
+<div style="position:relative; width:100%; margin:6px 0; z-index:2;">
+ <input id="loginPassword" type="password" placeholder="Password" autocomplete="new-password"
+  style="width:100%; padding:14px; padding-right:78px; border-radius:12px; border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.04); color:white; box-sizing:border-box; font-size:16px; outline:none;">
 
-    <p style="font-size:12px; opacity:.6; margin:8px 0 0 0;">
-      Use the same email for signup and payment
-    </p>
+  <button id="toggleLoginPassword" type="button"
+    style="position:absolute; right:8px; top:50%; transform:translateY(-50%);
+           padding:6px 10px; border-radius:8px; border:none;
+           background:rgba(255,255,255,0.08); color:#fff; font-size:13px; font-weight:700; z-index:3; ">
+    Show
+  </button>
+</div>
+   <p style="margin:14px 0 6px; font-size:12px; opacity:.5;">Already have access?</p>
 
-    <button id="loginBtn"
-      style="width:100%; margin-top:12px; padding:12px; border-radius:10px; background:#2b6cff; border:none; color:white; font-weight:bold;">
-      Sign In
-    </button>
+ <button id="loginBtn"
+  style="width:100%; margin-top:14px; padding:14px; border-radius:14px; border:none;
+         font-size:16px; font-weight:700;
+         background:#2b6cff;
+         color:white;
+         box-shadow:none;
+         cursor:pointer;
+         transition:transform 0.08s ease, opacity 0.18s ease;"
+  onmousedown="this.style.transform='scale(0.985)';"
+  onmouseup="this.style.transform='scale(1)';"
+  onmouseleave="this.style.transform='scale(1)';">
+  Sign In
+</button>
+<p style="margin:24px 0 6px; font-size:12px; opacity:.5;">New user?</p>
 
-
-    <button onclick="window.location.href='https://buy.stripe.com/bJe4gzdJv2jW6la8GL97G02'"
-      style="width:100%; margin-top:14px; padding:14px; border-radius:10px; background:#00c853; border:none; color:white; font-weight:bold;">
-      Unlock Full App (€29.99)
-    </button>
-
+<button onclick="window.location.href='https://buy.stripe.com/bJe4gzdJv2jW6la8GL97G02'"
+  style="width:100%; margin-top:14px; padding:16px; border-radius:14px; border:none;
+         font-size:16px; font-weight:800;
+         background:linear-gradient(135deg, #00e676, #00c853);
+         color:white;
+         box-shadow:0 12px 28px rgba(0,200,83,0.45);
+         cursor:pointer;
+         transition:transform 0.08s ease, box-shadow 0.18s ease;"
+  onmousedown="this.style.transform='scale(0.985)'; this.style.boxShadow='0 6px 16px rgba(0,200,83,0.35)';"
+  onmouseup="this.style.transform='scale(1)'; this.style.boxShadow='0 12px 28px rgba(0,200,83,0.45)';"
+  onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 12px 28px rgba(0,200,83,0.45)';">
+  Unlock Full App (€29.99)
+</button>
     <p style="font-size:12px; opacity:.7; margin-top:8px;">
   Instant access • No subscription • Use forever
 </p>
@@ -2249,25 +2281,24 @@ function setInstallInstructions() {
     installPrompt.style.display = 'none';
     return;
   }
-
   if (isIphone) {
-    const isRealSafari = /Safari/i.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS|GSA/i.test(ua);
-
-    if (isRealSafari) {
-      installInstructions.innerHTML = 'iPhone: Tap Share, then Add to Home Screen.';
+    if (/CriOS|FxiOS|EdgiOS/i.test(ua)) {
+      installInstructions.textContent =
+        'Open in Safari → Tap Share → Add to Home Screen';
     } else {
-      installInstructions.innerHTML = 'iPhone: Open in Safari, then tap Share, then Add to Home Screen.';
+      installInstructions.textContent =
+        'Tap Share → Add to Home Screen';
     }
-    return;
+  } else if (isAndroid) {
+    installInstructions.textContent =
+      'Tap menu → Add to Home Screen or Install App';
+  } else {
+    installInstructions.textContent =
+      'Use your browser menu to add this app to your home screen';
   }
-
-  if (isAndroid) {
-    installInstructions.innerHTML = 'Android: Open in Chrome, tap menu, then Add to Home Screen.';
-    return;
-  }
-
-  installInstructions.innerHTML = 'Add this app to your home screen for the best experience.';
 }
+
+ 
 
 function maybeShowInstallPrompt() {
   const isStandalone =
@@ -2385,9 +2416,10 @@ if (forgotPasswordBtn) {
 
   overlay.style.display = 'none';
   document.body.style.visibility = 'visible';
-  setTimeout(() => {
-    maybeShowInstallPrompt();
-  }, 1500);
+ setTimeout(() => {
+  setInstallInstructions();
+  maybeShowInstallPrompt();
+}, 1500);
 });
 
 window.addEventListener('load', () => {
@@ -2461,6 +2493,20 @@ if (forgotPasswordBtn) {
     }
 
     status.textContent = 'Password reset email sent.';
+  });
+}
+const toggleLoginPasswordBtn = document.getElementById('toggleLoginPassword');
+const loginPasswordInput = document.getElementById('loginPassword');
+
+if (toggleLoginPasswordBtn && loginPasswordInput) {
+  toggleLoginPasswordBtn.addEventListener('click', function () {
+    if (loginPasswordInput.type === 'password') {
+      loginPasswordInput.type = 'text';
+      toggleLoginPasswordBtn.textContent = 'Hide';
+    } else {
+      loginPasswordInput.type = 'password';
+      toggleLoginPasswordBtn.textContent = 'Show';
+    }
   });
 }
 </script>
