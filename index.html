@@ -2164,7 +2164,7 @@ if('serviceWorker' in navigator){
 </div>
    <p style="margin:14px 0 6px; font-size:12px; opacity:.5;">Already have access?</p>
 
- <button id="loginBtn"
+  <button id="loginBtn"
   style="width:100%; margin-top:14px; padding:14px; border-radius:14px; border:none;
          font-size:16px; font-weight:700;
          background:#2b6cff;
@@ -2174,11 +2174,11 @@ if('serviceWorker' in navigator){
          transition:transform 0.08s ease, opacity 0.18s ease;"
   onmousedown="this.style.transform='scale(0.985)';"
   onmouseup="this.style.transform='scale(1)';"
-  onmouseleave="this.style.transform='scale(1)';">
+  onmouseleave="this.style.transform='scale(1)'; ontouchstart="this.style.transform='scale(0.985)';"
+ontouchend="this.style.transform='scale(1)'; ">
   Sign In
 </button>
 <p style="margin:24px 0 6px; font-size:12px; opacity:.5;">New user?</p>
-
 <button onclick="window.location.href='https://buy.stripe.com/bJe4gzdJv2jW6la8GL97G02'"
   style="width:100%; margin-top:14px; padding:16px; border-radius:14px; border:none;
          font-size:16px; font-weight:800;
@@ -2189,9 +2189,12 @@ if('serviceWorker' in navigator){
          transition:transform 0.08s ease, box-shadow 0.18s ease;"
   onmousedown="this.style.transform='scale(0.985)'; this.style.boxShadow='0 6px 16px rgba(0,200,83,0.35)';"
   onmouseup="this.style.transform='scale(1)'; this.style.boxShadow='0 12px 28px rgba(0,200,83,0.45)';"
-  onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 12px 28px rgba(0,200,83,0.45)';">
+  onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 12px 28px rgba(0,200,83,0.45)';"
+  ontouchstart="this.style.transform='scale(0.985)'; this.style.boxShadow='0 6px 16px rgba(0,200,83,0.35)';"
+  ontouchend="this.style.transform='scale(1)'; this.style.boxShadow='0 12px 28px rgba(0,200,83,0.45)';">
   Unlock Full App (€29.99)
 </button>
+
     <p style="font-size:12px; opacity:.7; margin-top:8px;">
   Instant access • No subscription • Use forever
 </p>
