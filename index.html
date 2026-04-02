@@ -2440,11 +2440,23 @@ if (forgotPasswordBtn) {
 
   overlay.style.display = 'none';
   document.body.style.visibility = 'visible';
- setTimeout(() => {
+setTimeout(() => {
   setInstallInstructions();
-maybeShowInstallPrompt();
-}, 1500);
-});
+
+  // 🔧 iPhone override (final fix)
+  if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+    const ua = navigator.userAgent;
+    if (/CriOS|FxiOS|EdgiOS|OPiOS|GSA/i.test(ua)) {
+     installInstructions.innerHTML =
+  'Open in Safari → Tap <span style="font-weight:700;">[▢↑]</span> then Add to Home Screen';
+    } else {
+     installInstructions.innerHTML =
+  'Tap <span style="font-weight:700;">[▢↑]</span> then Add to Home Screen';
+    }
+  }
+
+  maybeShowInstallPrompt();
+}, 1500);});
 
 window.addEventListener('load', () => {
   document.querySelectorAll('button').forEach(btn => {
