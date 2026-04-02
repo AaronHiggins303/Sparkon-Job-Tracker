@@ -51,7 +51,9 @@
   button:active {
     transform: scale(0.97);
     opacity: 0.92;
-button {
+  }
+
+  button {
     -webkit-appearance: none;
     appearance: none;
     touch-action: manipulation;
@@ -2174,8 +2176,9 @@ if('serviceWorker' in navigator){
          transition:transform 0.08s ease, opacity 0.18s ease;"
   onmousedown="this.style.transform='scale(0.985)';"
   onmouseup="this.style.transform='scale(1)';"
-  onmouseleave="this.style.transform='scale(1)'; ontouchstart="this.style.transform='scale(0.985)';"
-ontouchend="this.style.transform='scale(1)'; ">
+  onmouseleave="this.style.transform='scale(1)';"
+  ontouchstart="this.style.transform='scale(0.985)';"
+  ontouchend="this.style.transform='scale(1)';">
   Sign In
 </button>
 <p style="margin:24px 0 6px; font-size:12px; opacity:.5;">New user?</p>
@@ -2206,9 +2209,6 @@ ontouchend="this.style.transform='scale(1)'; ">
     <p id="loginStatus" style="margin-top:10px;"></p>
 
   </div>
-</div>
-
-</div>
 </div>
 
 <!-- INSTALL PROMPT -->
