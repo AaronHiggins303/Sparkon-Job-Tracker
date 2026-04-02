@@ -2216,7 +2216,7 @@ if('serviceWorker' in navigator){
       This app works best when added to your home screen.
     </p>
     <p id="installInstructions" style="font-size:13px; opacity:.75; margin-top:10px; line-height:1.5;">
-      Loading instructions...
+      Use your browser menu to add this app to your home screen
     </p>
     <button id="closeInstallPrompt"
       style="margin-top:16px; padding:12px 20px; border:none; border-radius:10px; background:#2b6cff; color:white;">
@@ -2265,14 +2265,22 @@ if (logoutBtn) {
     await supabase.auth.signOut();
     location.reload();
   });
+
 }
-
 function setInstallInstructions() {
-  if (!installInstructions) return;
+  if (!installInstructions || !installPrompt) return;
 
-  const ua = navigator.userAgent;
-  const isIphone = /iPhone|iPad|iPod/i.test(ua);
+  const ua = navigator.userAgent || '';
+  const platform = navigator.platform || '';
+  const vendor = navigator.vendor || '';
+  const maxTouchPoints = navigator.maxTouchPoints || 0;
+
+  const isIOS =
+    /iPhone|iPad|iPod/i.test(ua) ||
+    (platform === 'MacIntel' && maxTouchPoints > 1);
+
   const isAndroid = /Android/i.test(ua);
+
   const isStandalone =
     window.matchMedia('(display-mode: standalone)').matches ||
     window.navigator.standalone === true;
@@ -2281,23 +2289,38 @@ function setInstallInstructions() {
     installPrompt.style.display = 'none';
     return;
   }
-  if (isIphone) {
-    if (/CriOS|FxiOS|EdgiOS/i.test(ua)) {
-      installInstructions.textContent =
-        'Open in Safari → Tap Share → Add to Home Screen';
-    } else {
-      installInstructions.textContent =
-        'Tap Share → Add to Home Screen';
-    }
-  } else if (isAndroid) {
-    installInstructions.textContent =
-      'Tap menu → Add to Home Screen or Install App';
-  } else {
-    installInstructions.textContent =
-      'Use your browser menu to add this app to your home screen';
-  }
-}
 
+  if (isIOS) {
+    const isChromeIOS = /CriOS/i.test(ua);
+    const isFirefoxIOS = /FxiOS/i.test(ua);
+    const isEdgeIOS = /EdgiOS/i.test(ua);
+    const isOperaIOS = /OPiOS/i.test(ua);
+    const isGoogleAppIOS = /GSA/i.test(ua);
+
+    const isSafariIOS =
+      /Safari/i.test(ua) &&
+      /Apple/i.test(vendor) &&
+      !isChromeIOS &&
+      !isFirefoxIOS &&
+      !isEdgeIOS &&
+      !isOperaIOS &&
+      !isGoogleAppIOS;
+
+    if (isSafariIOS) {
+      installInstructions.textContent = 'Tap Share → Add to Home Screen';
+    } else {
+      installInstructions.textContent = 'Open in Safari → Tap Share → Add to Home Screen';
+    }
+    return;
+  }
+
+  if (isAndroid) {
+    installInstructions.textContent = 'Tap menu → Add to Home Screen or Install App';
+    return;
+  }
+
+  installInstructions.textContent = 'Use your browser menu to add this app to your home screen';
+}
  
 
 function maybeShowInstallPrompt() {
@@ -2358,7 +2381,8 @@ if (access && access.paid) {
   overlay.style.display = 'none';
   document.body.style.visibility = 'visible';
   setTimeout(() => {
-    maybeShowInstallPrompt();
+    setInstallInstructions();
+maybeShowInstallPrompt();
   }, 1500);
 } else {
   overlay.style.display = 'flex';
@@ -2418,7 +2442,7 @@ if (forgotPasswordBtn) {
   document.body.style.visibility = 'visible';
  setTimeout(() => {
   setInstallInstructions();
-  maybeShowInstallPrompt();
+maybeShowInstallPrompt();
 }, 1500);
 });
 
