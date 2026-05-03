@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" style="background:#0a0a0f;"><head>
 
 <meta charset="UTF-8">
@@ -11,10 +11,10 @@
 <title>SparkOn Job Tracker</title>
 
 <style>
-  body {
+ body {
+    background: #0a0a0f;
     visibility: hidden;
-  background: #0a0a0f;
-  }
+}
 
   html, body {
     max-width: 100%;
@@ -2149,11 +2149,16 @@ if('serviceWorker' in navigator){
 </p>
 
     <input id="loginEmail" type="email" placeholder="Email"
+
   onfocus="this.style.border='1px solid rgba(100,140,255,0.9)'; this.style.boxShadow='0 0 0 3px rgba(100,140,255,0.25)';"
   onblur="this.style.border='1px solid rgba(255,255,255,0.08)'; this.style.boxShadow='none';"
   style="width:100%; margin:6px 0; padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.04); color:white; box-sizing:border-box; font-size:16px; outline:none;">
 
+<p style="font-size:12px; opacity:0.6; margin:6px 0 10px;">
+⚠️ Use the same email you used for payment
+</p>
 <div style="position:relative; width:100%; margin:6px 0; z-index:2;">
+
  <input id="loginPassword" type="password" placeholder="Password" autocomplete="new-password"
   style="width:100%; padding:14px; padding-right:78px; border-radius:12px; border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.04); color:white; box-sizing:border-box; font-size:16px; outline:none;">
 
@@ -2164,7 +2169,7 @@ if('serviceWorker' in navigator){
     Show
   </button>
 </div>
-   <p style="margin:14px 0 6px; font-size:12px; opacity:.5;">Already have access?</p>
+   <p style="margin:14px 0 6px; font-size:12px; opacity:.5;">Already paid and have an account?</p>
 
   <button id="loginBtn"
   style="width:100%; margin-top:14px; padding:14px; border-radius:14px; border:none;
@@ -2179,10 +2184,27 @@ if('serviceWorker' in navigator){
   onmouseleave="this.style.transform='scale(1)';"
   ontouchstart="this.style.transform='scale(0.985)';"
   ontouchend="this.style.transform='scale(1)';">
-  Sign In
+  Sign In / Access Full App
+</button>
+<p style="margin:18px 0 6px; font-size:12px; opacity:.5;">Paid already but need to make your account?</p>
+<button id="createAccountBtn"
+  style="width:100%; margin-top:10px; padding:14px; border-radius:14px; border:1px solid rgba(255,255,255,0.12);
+         font-size:16px; font-weight:700;
+         background:rgba(255,255,255,0.05);
+         color:white;
+         box-shadow:none;
+         cursor:pointer;
+         transition:transform 0.08s ease, opacity 0.18s ease;"
+  onmousedown="this.style.transform='scale(0.985)';"
+  onmouseup="this.style.transform='scale(1)';"
+  onmouseleave="this.style.transform='scale(1)';"
+  ontouchstart="this.style.transform='scale(0.985)';"
+  ontouchend="this.style.transform='scale(1)';">
+  Create Account
 </button>
 <p style="margin:24px 0 6px; font-size:12px; opacity:.5;">New user?</p>
-<button onclick="window.location.href='https://buy.stripe.com/bJe4gzdJv2jW6la8GL97G02'"
+<button id="buyAccessBtn"
+  onclick="window.location.href='https://buy.stripe.com/bJe4gzdJv2jW6la8GL97G02'"
   style="width:100%; margin-top:14px; padding:16px; border-radius:14px; border:none;
          font-size:16px; font-weight:800;
          background:linear-gradient(135deg, #00e676, #00c853);
@@ -2195,7 +2217,7 @@ if('serviceWorker' in navigator){
   onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 12px 28px rgba(0,200,83,0.45)';"
   ontouchstart="this.style.transform='scale(0.985)'; this.style.boxShadow='0 6px 16px rgba(0,200,83,0.35)';"
   ontouchend="this.style.transform='scale(1)'; this.style.boxShadow='0 12px 28px rgba(0,200,83,0.45)';">
-  Unlock Full App (€29.99)
+  Buy Full Access €29.99
 </button>
 
     <p style="font-size:12px; opacity:.7; margin-top:8px;">
@@ -2257,6 +2279,9 @@ const installInstructions = document.getElementById('installInstructions');
 const closeInstallPrompt = document.getElementById('closeInstallPrompt');
 const status = document.getElementById('loginStatus');
 const logoutBtn = document.getElementById('logoutBtn');
+const loginBtn = document.getElementById('loginBtn');
+const createAccountBtn = document.getElementById('createAccountBtn');
+const buyAccessBtn = document.getElementById('buyAccessBtn');
 const forgotPasswordBtn = document.getElementById('forgotPasswordBtn');
 const resetPrompt = document.getElementById('resetPrompt');
 const resetPasswordInput = document.getElementById('resetPasswordInput');
@@ -2362,92 +2387,14 @@ supabase.auth.onAuthStateChange((event) => {
     }
   }
 });
-const { data: { session } } = await supabase.auth.getSession();
 
-supabase.auth.onAuthStateChange((event) => {
-  if (event === 'PASSWORD_RECOVERY') {
-    if (resetPrompt) {
-      resetPrompt.style.display = 'flex';
-    }
-  }
-}); if (!session) {
-  overlay.style.display = 'flex';
-  document.body.style.visibility = 'visible';
-} else {
-  const { data: access } = await supabase
-    .from('user_access')
-    .select('paid')
-    .eq('id', session.user.id)
-    .single();
-
-if (access && access.paid) {
-  overlay.style.display = 'none';
-  document.body.style.visibility = 'visible';
-  setTimeout(() => {
-    setInstallInstructions();
-maybeShowInstallPrompt();
-  }, 1500);
-} else {
-  overlay.style.display = 'flex';
-  document.body.style.visibility = 'visible';
-}
-
-}
-document.getElementById('loginBtn').addEventListener('click', async () => {
-
-if (forgotPasswordBtn) {
-  forgotPasswordBtn.addEventListener('click', async () => {
-    const email = document.getElementById('loginEmail').value;
-
-    if (!email) {
-      status.textContent = 'Enter your email first.';
-      return;
-    }
-
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.href
-    });
-
-    if (error) {
-      status.textContent = 'Error: ' + error.message;
-      return;
-    }
-
-    status.textContent = 'Password reset email sent.';
-  });
-}
-  const email = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPassword').value;
-
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password
-  });
-
-  if (error) {
-    status.textContent = 'Login failed: ' + error.message;
-    return;
-  }
-
-  const { data: access } = await supabase
-    .from('user_access')
-    .select('paid')
-    .eq('id', data.user.id)
-    .single();
-
-  if (!access || !access.paid) {
-    status.textContent = 'No active subscription';
-    document.body.style.visibility = 'visible';
-    return;
-  }
-
+function showPaidAppAccess() {
   overlay.style.display = 'none';
   document.body.style.visibility = 'visible';
 
   setTimeout(() => {
     setInstallInstructions();
 
-    // iPhone override
     if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
       const ua = navigator.userAgent;
       if (/CriOS|FxiOS|EdgiOS|OPiOS|GSA/i.test(ua)) {
@@ -2461,9 +2408,198 @@ if (forgotPasswordBtn) {
 
     maybeShowInstallPrompt();
   }, 1500);
-});
+}
+
+function showLoginOverlay() {
+  overlay.style.display = 'flex';
+  document.body.style.visibility = 'visible';
+}
+
+async function getUserAccessRecord(userId) {
+  const attempts = [
+    { column: 'id', fields: 'paid, active' },
+    { column: 'user_id', fields: 'paid, active' },
+    { column: 'id', fields: 'paid' },
+    { column: 'user_id', fields: 'paid' }
+  ];
+
+  for (const attempt of attempts) {
+    const { data, error } = await supabase
+      .from('user_access')
+      .select(attempt.fields)
+      .eq(attempt.column, userId)
+      .maybeSingle();
+
+    if (!error && data) {
+      return data;
+    }
+  }
+
+  return null;
+}
+
+async function getPaidEmailRecord(email) {
+  if (!email) return null;
+
+  const attempts = [
+    { table: 'paid_emails', fields: 'paid' },
+    { table: 'paid_emails', fields: '*' },
+    { table: 'user_access', fields: 'paid, active' }
+  ];
+
+  for (const attempt of attempts) {
+    const { data, error } = await supabase
+      .from(attempt.table)
+      .select(attempt.fields)
+      .eq('email', email)
+      .maybeSingle();
+
+    if (!error && data) {
+      return data;
+    }
+  }
+
+  return null;
+}
+
+function hasPaidAccess(access) {
+  if (!access) return false;
+  return access.paid === true || access.active === true;
+}
+
+async function enforcePaidAccess(user) {
+  status.textContent = '';
+  showPaidAppAccess();
+  return true;
+}
+
+const { data: { session } } = await supabase.auth.getSession();
+
+if (!session) {
+  showLoginOverlay();
+} else {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    await enforcePaidAccess(user);
+  } else {
+    showLoginOverlay();
+  }
+}
+
+if (createAccountBtn) {
+  createAccountBtn.addEventListener('click', async () => {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+
+    if (!email || !password) {
+      status.textContent = 'Enter email and password first.';
+      return;
+    }
+
+    status.textContent = 'Creating account...';
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password
+    });
+
+    if (error) {
+      status.textContent = 'Create account failed: ' + error.message;
+      return;
+    }
+
+    status.textContent = 'Account created. Now sign in.';
+  });
+}
+
+if (loginBtn) {
+  loginBtn.addEventListener('click', async () => {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+
+    if (!email || !password) {
+      status.textContent = 'Enter email and password first.';
+      return;
+    }
+
+    status.textContent = 'Signing in...';
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+if (error) {
+  if (error.message.includes("Invalid login credentials")) {
+    status.textContent = "No account found. Please create an account.";
+  } else if (error.message.includes("already")) {
+    status.textContent = "Account already exists. Please sign in.";
+  } else {
+    status.textContent = error.message;
+  }
+  return;
+}
+
+// 🔐 CHECK IF USER HAS PAID
+const { data: userData } = await supabase
+  .from('user_access')
+  .select('*')
+  .eq('email', email)
+  .single();
+
+if (!userData || userData.paid !== true) {
+  status.textContent = "No active subscription. Please purchase access.";
+  return;
+}
+
+// ✅ ONLY PAID USERS GET ACCESS
+showPaidAppAccess();
+
+  if (error) {
+  if (error.message.includes("Invalid login credentials")) {
+    status.textContent = "No account found. Please create an account.";
+  } else {
+    status.textContent = error.message;
+  }
+  return;
+}
+
+    const user = data?.user || (await supabase.auth.getUser()).data.user;
+
+    if (!user) {
+      status.textContent = 'Could not verify user.';
+      showLoginOverlay();
+      return;
+    }
+
+    await enforcePaidAccess(user);
+  });
+}
+
+if (forgotPasswordBtn) {
+  forgotPasswordBtn.addEventListener('click', async () => {
+    const email = document.getElementById('loginEmail').value.trim();
+
+    if (!email) {
+      status.textContent = 'Enter your email first.';
+      return;
+    }
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + window.location.pathname
+    });
+
+    if (error) {
+      status.textContent = 'Error: ' + error.message;
+      return;
+    }
+
+    status.textContent = 'Password reset email sent.';
+  });
+}
 
 window.addEventListener('load', () => {
+  // document.body.style.visibility = 'visible';
   document.querySelectorAll('button').forEach(btn => {
     btn.addEventListener('touchstart', () => {
       btn.style.transform = 'scale(0.97)';
@@ -2515,27 +2651,6 @@ if (resetPasswordBtn) {
     }, 1200);
   });
 }
-if (forgotPasswordBtn) {
-  forgotPasswordBtn.addEventListener('click', async () => {
-    const email = document.getElementById('loginEmail').value.trim();
-
-    if (!email) {
-      status.textContent = 'Enter your email first.';
-      return;
-    }
-
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + window.location.pathname
-    });
-
-    if (error) {
-      status.textContent = 'Error: ' + error.message;
-      return;
-    }
-
-    status.textContent = 'Password reset email sent.';
-  });
-}
 const toggleLoginPasswordBtn = document.getElementById('toggleLoginPassword');
 const loginPasswordInput = document.getElementById('loginPassword');
 
@@ -2550,6 +2665,38 @@ if (toggleLoginPasswordBtn && loginPasswordInput) {
     }
   });
 }
+
+window.addEventListener('load', async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (!session) {
+    showLoginOverlay();
+    document.body.style.visibility = 'visible';
+    return;
+  }
+
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    showLoginOverlay();
+    document.body.style.visibility = 'visible';
+    return;
+  }
+
+  const { data } = await supabase
+    .from('user_access')
+    .select('*')
+    .eq('email', user.email)
+    .single();
+
+  if (data && data.paid === true) {
+    showPaidAppAccess();
+  } else {
+    showLoginOverlay();
+  }
+
+  document.body.style.visibility = 'visible';
+});
 </script>
 </body>
 </html>
